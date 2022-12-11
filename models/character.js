@@ -6,7 +6,7 @@ image:String,
 name:{type:String, required:true},
 stats: [{stat:Number}],
 inventory: [String],
-isValid: Boolean
+class:String,
 });
 const Character = mongoose.model('Character', CharacterSchema); 
 module.exports = CharacterSchema;
