@@ -1,0 +1,23 @@
+{
+  "name": "partfinder",
+  "version": "1.0.0",
+  "description": "partfinder project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PartFinder-T21/PartFinder.git"
+  },
+  "keywords": [
+    "partfinder",
+    "rpg"
+  ],
+  "author": "T21",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PartFinder-T21/PartFinder/issues"
+  },
+  "homepage": "https://github.com/PartFinder-T21/PartFinder#readme"
+}
