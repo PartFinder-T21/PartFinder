@@ -3,14 +3,18 @@ const express=require('express');
 const app=express();
 const mongoose=require('mongoose')
 
-const routes = require('./routes/user');
+const userRoute = require('./routes/user');
+const characterRoute = require('./routes/character');
+const groupRoute = require('./routes/group');
 
 
 
 
 
 app.use(express.json());
-app.use('/',routes);
+app.use('/user',userRoute);
+app.use('/character',characterRoute);
+app.use('/group',groupRoute);
 
 mongoose.connect(
     process.env.MONGODB_URI,
