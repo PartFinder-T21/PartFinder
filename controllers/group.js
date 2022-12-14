@@ -90,9 +90,37 @@ const addPlayer=(req,res)=>{
         requests:requestsArray
     },(err) => {
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        res.status(200).json({message:'Updated',status:200});
+        res.status(200).json({message:'Character added',status:200});
+    })
+}
+const declinePlayer=(req,res)=>{
+    let group=Group.findById(req.body.group,(err,data)=>{
+        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
+        return JSON.parse(data);
+    })
+    let requestsArray=Group(group).requests;
+    requestsArray.splice(request.indexOf(req.body.character),1);
+    Group.findByIdAndUpdate(req.body.group,{
+        requests:requestsArray
+    },(err) => {
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        res.status(200).json({message:'Player declined',status:200});
+    })
+}
+const removePlayer=(req,res)=>{
+    let group=Group.findById(req.body.group,(err,data)=>{
+        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
+        return JSON.parse(data);
+    })
+    let charactersArray=Group(group).characters;
+    charactersArray.splice(request.indexOf(req.body.character),1);
+    Group.findByIdAndUpdate(req.body.group,{
+        characters:charactersArray
+    },(err) => {
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        res.status(200).json({message:'Player removed',status:200});
     })
 }
 
 
-module.exports = {newGroup,getAllGroups,getOneGroup,editGroup,deleteGroup,addPlayer};
+module.exports = {newGroup,getAllGroups,getOneGroup,editGroup,deleteGroup,addPlayer,declinePlayer,removePlayer};
