@@ -7,8 +7,7 @@ password: {type:String, required:true},
 image: String,
 description: String,
 reputation: Number,
-temperature: Number,
 isVerified: Boolean
 });
 const User = mongoose.model('User', UserSchema); 
-module.exports = UserSchema;
+module.exports = User;
