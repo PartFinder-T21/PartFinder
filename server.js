@@ -22,6 +22,6 @@ mongoose.connect(
 );
 
 const listener = app.listen(process.env.PORT || 3000, () =>{
-    console.log('App listening on port ' + listener.address().port);
+    console.log('App listening on port ' + listener.address());
     console.log(process.env.MONGODB_URI);
 })

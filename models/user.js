@@ -11,4 +11,4 @@ temperature: Number,
 isVerified: Boolean
 });
 const User = mongoose.model('User', UserSchema); 
-module.exports = UserSchema;
+module.exports = User;
