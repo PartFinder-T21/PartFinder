@@ -1,10 +1,11 @@
+const Group = require("../models/group");
 var codes=new Set();
 {
     let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let length=5;
     let size=4084101;
     let code="";
-    for(let it=0;i<size;it++) {
+    for(let it=0;it<size;it++) {
         do {
             for (let i = 0; i < length; i++) {
                 code += letters.charAt(Math.floor(Math.random() * length))
@@ -45,8 +46,8 @@ const getAllGroups=(req,res)=>{
 const getOneGroup=(req,res)=>{
     let code=req.body.code;
     Group.findOne({code:code},(err,data)=>{
-        if(err || !data) return res.(404).json({message:"Group does not exist",status:404});
-        return res.(200).json({data:data,status:200});
+        if(err || !data) return res.status(404).json({message:"Group does not exist",status:404});
+        return res.status(200).json({data:data,status:200});
     })
 }
 

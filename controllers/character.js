@@ -1,3 +1,4 @@
+const Character = require("../models/character");
 const newCharacter = (req,res)=>{
     const newCharacter=new Character({
         name:req.body.name,

@@ -9,4 +9,4 @@ inventory: [String],
 class:String,
 });
 const Character = mongoose.model('Character', CharacterSchema); 
-module.exports = CharacterSchema;
+module.exports = Character;
