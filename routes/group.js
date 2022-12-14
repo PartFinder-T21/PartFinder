@@ -4,12 +4,13 @@ const groupController = require('../controllers/group');
 
 router.post('/group',groupController.newGroup);
 router.get('/group',groupController.getAllGroups);
-router.put('/group/:id',groupController.editGroup);
+router.get('/group',groupController.getOneGroup)
+router.put('/group',groupController.editGroup);
 
 
-router.put('/group/accept/:character',groupController.addPlayer);
-router.put('/group/decline/:character',groupController.declinePlayer);
-router.put('/group/remove/:user',groupController.removePlayer);
+router.put('/group/accept',groupController.addPlayer);
+router.put('/group/decline',groupController.declinePlayer);
+router.put('/group/remove',groupController.removePlayer);
 router.delete('/group',groupController.deleteGroup);
 
 

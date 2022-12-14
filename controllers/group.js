@@ -44,7 +44,7 @@ const getAllGroups=(req,res)=>{
 }
 
 const getOneGroup=(req,res)=>{
-    let code=req.body.code;
+    let code=req.query.code;
     Group.findOne({code:code},(err,data)=>{
         if(err || !data) return res.status(404).json({message:"Group does not exist",status:404});
         return res.status(200).json({data:data,status:200});
@@ -58,18 +58,41 @@ const editGroup=(req,res)=>{
         size:req.body.size
     },(err)=>{
         if(err) return res.status(500).json({message:'Something went wrong', status:500});
-        return res.status(200).json({message:'Updated',status:500});
+        return res.status(200).json({message:'Updated',status:200});
     })
 }
 const deleteGroup=(req,res)=>{
     let id=req.body.id;
     let group=Group.findById(id,(err,data)=>{
         if(err || !data) return res.status(404).json({message:"Group does not exist",status:404});
-        return res.status(200).json(data);
+        return res.json(data);
     })
+    code=group.code;
+    codes.add(code);
     group.deleteOne();
     res.status(204).send();
 }
+const addPlayer=(req,res)=>{
+    let group=Group.findById(req.body.group,(err,data)=>{
+        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
+        return JSON.parse(data);
+    })
+    let charactersArray=Group(group).characters;
+    let requestsArray=Group(group).requests;
+    if(charactersArray.length===Group(group).size)
+        return res.status(400).json({message:'Group is full',status:400});
+    if(charactersArray.includes(req.body.character))
+        return res.status(400).json({message:'Character is already in group',status:400})
+    charactersArray.push(req.body.character);
+    requestsArray.splice(request.indexOf(req.body.character),1);
+    Group.findByIdAndUpdate(req.body.group,{
+        characters:charactersArray,
+        requests:requestsArray
+    },(err) => {
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        res.status(200).json({message:'Updated',status:200});
+    })
+}
 
 
-module.exports = {newGroup,getAllGroups,getOneGroup,editGroup,deleteGroup};
+module.exports = {newGroup,getAllGroups,getOneGroup,editGroup,deleteGroup,addPlayer};

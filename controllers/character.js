@@ -15,15 +15,17 @@ const newCharacter = (req,res)=>{
 };
 
 const getAllCharacters=(req,res)=>{
-    Character.find({},(err,data)=>{
+    let user=req.query.u;
+    Character.find({user:user},(err,data)=>{
         if(err) return res.status(500).json({Error:err,status:500});
         return res.status(200).json({data:data,status:200});
     })
 }
 
 const getOneCharacter=(req,res)=>{
-    let id=req.body.id;
-    Character.findById(id,(err,data)=>{
+    let user=req.query.u;
+    let name=req.query.name;
+    Character.find({name:name,user:user},(err,data)=>{
         if(err || !data) return res.status(404).json({message:"Character does not exist",status:404});
         return res.status(200).json({data:data, status: 200});
     })
@@ -40,7 +42,7 @@ const editCharacter=(req,res)=>{
         inventory:req.body.inventory,
     },(err)=>{
         if(err) return res.status(500).json({message:'Something went wrong', status:500});
-        return res.status(200).json({message:'Updated',status:500});
+        return res.status(200).json({message:'Updated',status:200});
     })
 }
 const deleteOneCharacter=(req,res)=>{
