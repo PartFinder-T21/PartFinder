@@ -1,10 +1,10 @@
 const mongoose = require("mongoose"); //import mongoose
 
 const CharacterSchema = new mongoose.Schema({
-user: {type:User, required:true},
+user: {type:String, required:true},
 image:String,
 name:{type:String, required:true},
-stats: [{stat:Number}],
+stats: [{stat:String,value:Number,required:true}],
 inventory: [String],
 class:String,
 });

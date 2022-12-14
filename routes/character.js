@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const characterController = require('../controllers/character');
 
-router.post('/characters',characterController.newCharacter);
-router.get('/characters',characterController.getAllCharacters);
-router.get('/characters/:name:user',characterController.getOneCharacter);
-router.put('/character/:name:user',characterController.editCharacter);
-router.delete('/character/:name:user',characterController.deleteOneCharacter)
+router.post('/character',characterController.newCharacter);
+router.get('/character',characterController.getAllCharacters);
+router.get('/character/:id',characterController.getOneCharacter);
+router.put('/character/:id',characterController.editCharacter);
+router.delete('/character/:id',characterController.deleteOneCharacter)
 
 module.exports = router;
