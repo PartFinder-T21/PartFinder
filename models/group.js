@@ -7,7 +7,8 @@ name:{type:String,required:true},
 description:String,
 size:{type:Number,required:true},
 characters:[String], //Array containing characters IDs who joined the group
-requests:[String] //Array containing characters IDs with pending request
+requests:[String], //Array containing characters IDs with pending request
+messages:[{username:String,message:String,isMaster:Boolean}]
 });
 const Group = mongoose.model('Group', GroupSchema); 
 module.exports = Group;

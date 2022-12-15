@@ -67,8 +67,7 @@ const deleteGroup=(req,res)=>{
         if(err || !data) return res.status(404).json({message:"Group does not exist",status:404});
         return res.json(data);
     })
-    code=group.code;
-    codes.add(code);
+    codes.add(Group(group).code);
     group.deleteOne();
     res.status(204).send();
 }
@@ -84,7 +83,7 @@ const addPlayer=(req,res)=>{
     if(charactersArray.includes(req.body.character))
         return res.status(400).json({message:'Character is already in group',status:400})
     charactersArray.push(req.body.character);
-    requestsArray.splice(request.indexOf(req.body.character),1);
+    requestsArray.splice(requestsArray.indexOf(req.body.character),1);
     Group.findByIdAndUpdate(req.body.group,{
         characters:charactersArray,
         requests:requestsArray
@@ -99,7 +98,7 @@ const declinePlayer=(req,res)=>{
         return JSON.parse(data);
     })
     let requestsArray=Group(group).requests;
-    requestsArray.splice(request.indexOf(req.body.character),1);
+    requestsArray.splice(requestsArray.indexOf(req.body.character),1);
     Group.findByIdAndUpdate(req.body.group,{
         requests:requestsArray
     },(err) => {
@@ -113,7 +112,7 @@ const removePlayer=(req,res)=>{
         return JSON.parse(data);
     })
     let charactersArray=Group(group).characters;
-    charactersArray.splice(request.indexOf(req.body.character),1);
+    charactersArray.splice(charactersArray.indexOf(req.body.character),1);
     Group.findByIdAndUpdate(req.body.group,{
         characters:charactersArray
     },(err) => {
@@ -138,5 +137,50 @@ const requestJoin=(req,res)=>{
     })
 }
 
+const newMessage=(req,res)=>{
+    let groupid=req.body.groupid;
+    let history=Group.findById(groupid,(err,data)=>{
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        return JSON.parse(data);
+    })
+    //if user is not in group
+    if(!Group(history).characters.includes({user:req.body.userid}))
+        return res.status(403).json({message:'User is not in group',status:403});
 
-module.exports = {newGroup,getAllGroups,getOneGroup,editGroup,deleteGroup,addPlayer,declinePlayer,removePlayer,requestJoin};
+    history=Group(history).messages;
+    history.push({username:req.body.username,message:req.body.message,isMaster:req.body.master});
+    Group.findByIdAndUpdate(groupid,{
+        messages:history
+    },(err)=>{
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        return res.status(200).json({message:'Message sent',status:200})
+    })
+}
+
+const getMessages=(req,res)=>{
+    let groupid=req.query.groupid;
+    let history=Group.findById(groupid,(err,data)=>{
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        return JSON.parse(data);
+    })
+    //if user is not in group
+    if(!Group(history).characters.includes({user:req.body.userid}))
+        return res.status(403).json({message:'User is not in group',status:403});
+
+    history=Group(history).messages;
+    return res.status(200).json(history);
+}
+
+module.exports = {
+    newGroup,
+    getAllGroups,
+    getOneGroup,
+    editGroup,
+    deleteGroup,
+    addPlayer,
+    declinePlayer,
+    removePlayer,
+    requestJoin,
+    newMessage,
+    getMessages
+};
