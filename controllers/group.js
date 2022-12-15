@@ -121,6 +121,22 @@ const removePlayer=(req,res)=>{
         res.status(200).json({message:'Player removed',status:200});
     })
 }
+const requestJoin=(req,res)=>{
+    let characterid=req.body.characterid;
+    let groupid=req.body.groupid;
+    let group=Group.findById(groupid,(err,data)=>{
+        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
+        return JSON.parse(data);
+    })
+    let requestArray=Group(group).characters;
+    requestArray.push(characterid);
+    Group.findByIdAndUpdate(groupid,{
+        requests:requestArray
+    },(err)=>{
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        return res.status(200).json({message:'Request sent',status:200});
+    })
+}
 
 
-module.exports = {newGroup,getAllGroups,getOneGroup,editGroup,deleteGroup,addPlayer,declinePlayer,removePlayer};
+module.exports = {newGroup,getAllGroups,getOneGroup,editGroup,deleteGroup,addPlayer,declinePlayer,removePlayer,requestJoin};
