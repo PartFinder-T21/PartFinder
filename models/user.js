@@ -7,7 +7,8 @@ password: {type:String, required:true},
 image: String,
 description: String,
 reputation: Number,
-isVerified: Boolean
+isVerified: Boolean,
+groups:[String]
 });
 const User = mongoose.model('User', UserSchema); 
 module.exports = User;
