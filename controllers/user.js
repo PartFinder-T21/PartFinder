@@ -1,35 +1,25 @@
 const Group = require("../models/group");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const newUser = (req,res,next) => {
-    let emailisin = User.exists({email: req.body.email},(err,data)=>{
-        if(err || !data) return res.status(500).json({message:"Something went wrong",status:404});
-    });
-    let usernameisin= User.exists({username: req.body.username},(err,data)=>{
-        if(err || !data) return res.status(500).json({message:"Something went wrong",status:404});
-    });
-    if(emailisin){
-        return res.status(400).json({message:'email already registered',status:400});
-    }
-    if(usernameisin){
-        return res.status(400).json({message:'username already taken',status:400});
-    }
-    const newUser = (req,res)=>{
+const User = require("../models/user")
+const newUser = (req,res) => {
         const newUser=new User({
             username:req.body.username,
             email:req.body.email,
             password:req.body.password,
             image:req.body.image,
             description:req.body.description,
-            reputation:req.body.reputation,
-            isVerified:req.body.isVerified,
+            reputation:0,
+            isVerified:false,
             groups:[]
         })
         newUser.save((err,data)=>{
-            if(err) return res.status(500).json({Error:err,status:500});
+            if(err){
+                if(err.code!=11000)return res.status(500).json({Error:err,status:500});
+                else return res.status(400).json({message:"Username and/or email is already registered",status:400});
+            }
             return res.status(201).json({data:data,status:201});
         })
-    };
 }
 
 const login = async (req,res,next) => {
@@ -67,4 +57,4 @@ const login = async (req,res,next) => {
 
 }
 
-module.exports = {newUser};
+module.exports = {newUser,login};
