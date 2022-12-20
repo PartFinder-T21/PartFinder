@@ -4,8 +4,7 @@ const groupController = require('../controllers/group');
 
 //methods for managing groups
 router.post('/group',groupController.newGroup);
-router.get('/group',groupController.getAllGroups);
-router.get('/group',groupController.getOneGroup)
+router.get('/group',groupController.getGroups);
 router.put('/group',groupController.editGroup);
 router.delete('/group',groupController.deleteGroup);
 
@@ -18,5 +17,6 @@ router.put('/group/request',groupController.requestJoin);
 //methods for player interaction
 router.put('/group/chat',groupController.newMessage);
 router.get('/group/chat',groupController.getMessages);
+//router.put('/group/chat',groupController.throwDice);
 
 module.exports = router;

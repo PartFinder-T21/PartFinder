@@ -1,19 +1,12 @@
 const Group = require("../models/group");
-var codes=new Set();
-{
-    let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let length=5;
-    let size=4084101;
-    let code="";
-    for(let it=0;it<size;it++) {
-        do {
-            for (let i = 0; i < length; i++) {
-                code += letters.charAt(Math.floor(Math.random() * length))
-            }
-        } while (codes.has(code));
-        codes.add(code);
-    }
-}
+var codes = new Set();
+var lineReader = require('readline').createInterface({
+    input: require('fs').createReadStream('codes.txt',)
+});
+lineReader.on('line', function (line) {
+    codes.add(line);
+});
+
 const chooseFirst=()=>{
     let it=codes.values();
     let first=it.next().value;
@@ -36,40 +29,48 @@ const newGroup = (req,res)=>{
     })
 };
 
-const getAllGroups=(req,res)=>{
-    Group.find({},(err,data)=>{
-        if(err) return res.status(500).json({Error:err,status:500});
-        return res.status(200).json({data:data,status:200});
-    })
-}
-
-const getOneGroup=(req,res)=>{
+const getGroups=(req,res)=>{
     let code=req.query.code;
-    Group.findOne({code:code},(err,data)=>{
-        if(err || !data) return res.status(404).json({message:"Group does not exist",status:404});
-        return res.status(200).json({data:data,status:200});
-    })
+    if(!code) {
+        Group.find({}, (err, data) => {
+            if (err) return res.status(500).json({Error: err, status: 500});
+            return res.status(200).json({data: data, status: 200});
+        })
+    }
+    else {
+        Group.findOne({code: code}, (err, data) => {
+            if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
+            return res.status(200).json({data: data, status: 200});
+        })
+    }
 }
 
 const editGroup=(req,res)=>{
     let id=req.body.id;
+    let description=req.body.description;
+    let size=req.body.size;
+    if(size>5) return res.status(400).json({message:'Size too big',status:400});
     Group.findByIdAndUpdate(id,{
-        description:req.body.description,
-        size:req.body.size
+        description:description,
+        size:size
     },(err)=>{
         if(err) return res.status(500).json({message:'Something went wrong', status:500});
         return res.status(200).json({message:'Updated',status:200});
     })
 }
-const deleteGroup=(req,res)=>{
-    let id=req.body.id;
-    let group=Group.findById(id,(err,data)=>{
-        if(err || !data) return res.status(404).json({message:"Group does not exist",status:404});
-        return res.json(data);
+const deleteGroup=(req, res) => {
+    let id = req.body.id;
+    Group.findById(id, (err, data) => {
+        if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
+        else{
+            Group.findByIdAndDelete(id, (err) => {
+                if (err) return res.status(500).json({message: "Error while deleting", status: 500});
+                codes.add(Group(data).code);
+
+                return res.status(204).json({message:"Group deleted",status:204});
+            });
+        }
     })
-    codes.add(Group(group).code);
-    group.deleteOne();
-    res.status(204).send();
 }
 const addPlayer=(req,res)=>{
     let group=Group.findById(req.body.group,(err,data)=>{
@@ -173,8 +174,7 @@ const getMessages=(req,res)=>{
 
 module.exports = {
     newGroup,
-    getAllGroups,
-    getOneGroup,
+    getGroups,
     editGroup,
     deleteGroup,
     addPlayer,

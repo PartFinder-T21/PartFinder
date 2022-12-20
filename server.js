@@ -2,20 +2,19 @@ const dotenv=require('dotenv').config({path: '/home/sheppi/Scrivania/PartFinder/
 const express=require('express');
 const app=express();
 const mongoose=require('mongoose')
-
 const userRoute = require('./routes/user');
 const characterRoute = require('./routes/character');
 const groupRoute = require('./routes/group');
+const diceRoute = require('./routes/dice');
 
 
-
+const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 
 
 app.use(express.json());
-app.use('/user',userRoute);
-app.use('/character',characterRoute);
-app.use('/group',groupRoute);
+app.use('/',routes);
 
+console.log("routes")
 mongoose.connect(
     process.env.MONGODB_URI,
     { useNewUrlParser: true, useUnifiedTopology: true },
@@ -26,6 +25,6 @@ mongoose.connect(
 );
 
 const listener = app.listen(process.env.PORT || 3000, () =>{
-    console.log('App listening on port ' + listener.address());
-    console.log(process.env.MONGODB_URI);
+    console.log('App listening on port ' + listener.address().port);
+
 })
