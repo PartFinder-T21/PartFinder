@@ -8,7 +8,8 @@ image: String,
 description: String,
 reputation: Number,
 isVerified: Boolean,
-groups:[String]
+upvotes:[String],
+downvotes:[String],
 });
 const User = mongoose.model('User', UserSchema); 
 module.exports = User;

@@ -12,11 +12,12 @@ const newUser = async(req,res) => {
         description:req.body.description,
         reputation:0,
         isVerified:false,
-        groups:[]
+        upvotes:[],
+        downvotes:[]
     })
     newUser.save((err,data)=>{
         if(err){
-            if(err.code!=11000)return res.status(500).json({Error:err,status:500});
+            if(err.code!==11000)return res.status(500).json({Error:err,status:500});
             else return res.status(400).json({message:"Username and/or email is already registered",status:400});
         }
         return res.status(201).json({data:data,status:201});
@@ -48,4 +49,85 @@ const login = (req,res) => {
     })
 }
 
-module.exports = {newUser,login};
+const getUser=(req,res)=>{
+    let id=req.query.id;
+    if(!id)
+        User.find({},'username image description reputation',(err,data)=>{
+            if(err) return res.status(500).json({message:'Unexpected error',status:500});
+            else return res.status(200).json(data);
+        })
+    else
+        User.findById(id,'username image description reputation',(err,data)=>{
+            if(err) return res.status(500).json({message:'Unexpected error',status:500});
+            else return res.status(200).json(data);
+        })
+}
+
+const editUser=(req,res)=>{
+    let id=req.body.id;
+    let myId=req.body.myId;
+    if(id === myId){
+        let username=req.body.username;
+        let image=req.body.image;
+        let description=req.body.description;
+        User.findByIdAndUpdate(myId,{
+            username:username,
+            description:description,
+            image:image
+        },(err)=>{
+            if(err) return res.status(500).json({message:'Unexpected error',status:500});
+            else return res.status(200).json({message:'Updated',status:200});
+        })
+    }
+    else return res.status(403).json({message:'User id does not match',status:403});
+}
+
+const upVote=(req,res)=>{
+    let id=req.body.id;
+    let myId=req.body.myId;
+    if(myId) {
+        User.findById(id,(err, data) => {
+            if (err) return res.status(500).json({message: 'Unexpected error', status: 500});
+            else if (data.upvotes.includes(myId)) return res.status(400).json({
+                message: 'Cannot upvote twice',
+                status: 400
+            });
+            else{
+                User.findByIdAndUpdate(id,{
+                    $inc:{reputation:1},
+                    $push:{upvotes:myId},
+                    $pull:{downvotes:myId}
+                },(err)=>{
+                    if (err) return res.status(500).json({message: 'Unexpected error', status: 500});
+                    else return res.status(200).json({message:'User upvoted',status:200});
+                })
+            }
+        })
+    }
+    else return res.status(400).json({message:'Bad request',status:400});
+}
+const downVote=(req,res)=>{
+    let id=req.body.id;
+    let myId=req.body.myId;
+    if(myId) {
+        User.findById(id,(err, data) => {
+            if (err) return res.status(500).json({message: 'Unexpected error', status: 500});
+            else if (data.downvotes.includes(myId)) return res.status(400).json({
+                message: 'Cannot downvote twice',
+                status: 400
+            });
+            else{
+                User.findByIdAndUpdate(id,{
+                    $inc:{reputation:-1},
+                    $push:{downvotes:myId},
+                    $pull:{upvotes:myId}
+                },(err)=>{
+                    if (err) return res.status(500).json({message: 'Unexpected error', status: 500});
+                    else return res.status(200).json({message:'User downvoted',status:200});
+                })
+            }
+        })
+    }
+    else return res.status(400).json({message:'Bad request',status:400});
+}
+module.exports = {newUser,login,getUser,editUser,upVote,downVote};
