@@ -20,7 +20,19 @@ const newUser = async(req,res) => {
             if(err.code!==11000)return res.status(500).json({Error:err,status:500});
             else return res.status(400).json({message:"Username and/or email is already registered",status:400});
         }
-        return res.status(201).json({data:data,status:201});
+        else{
+            let payload = {username: data.username, id: data._id};
+            let options = {expiresIn: 21600};
+            let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+            let save = {
+                success: true,
+                message: "validation token",
+                token: token,
+                username: data.username,
+                id: data._id,
+            }
+            return res.cookie('tk',save).status(201).send();
+        }
     })
 }
 
@@ -36,11 +48,12 @@ const login = (req,res) => {
                     let payload = {username: data.username, id: data._id};
                     let options = {expiresIn: 21600};
                     let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
-
-                    return res.status(200).json({
-                        success: true, message: "validation token", token: token,
-                        username: data.username, id: data._id, self: "user/tk/" + data._id
-                    });
+                    let save = {
+                        success: true,
+                        message: "validation token",
+                        token: token
+                    }
+                    return res.cookie('tk',save).status(200).send();
                 } else {
                     return res.status(400).json({Result:result,message: "Username or password is wrong password check", status: 400});
                 }
