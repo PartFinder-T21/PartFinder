@@ -1,31 +1,35 @@
 const Group = require("../models/group");
-var codes = new Set();
-var lineReader = require('readline').createInterface({
-    input: require('fs').createReadStream('codes.txt',)
-});
-lineReader.on('line', function (line) {
-    codes.add(line);
-});
-
-const chooseFirst=()=>{
-    let it=codes.values();
-    let first=it.next().value;
-    codes.delete(first);
-    return first;
+const Character = require("../models/character");
+const _ = require('lodash');
+const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
+const generateCode = ()=>{
+    let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let length=5;
+    let code="";
+    for (let i = 0; i < length; i++) {
+        code += letters.charAt(Math.floor(Math.random() * 26))
+    }
+    return code;
 }
-const newGroup = (req,res)=>{
-    const newGroup=new Group({
-        name:req.body.name,
-        code:chooseFirst(),
-        master:req.body.master,
-        description:req.body.description,
-        size:req.body.size,
-        characters:[],
-        requests:[]
+const newGroup = async (req, res) => {
+    let userInfo = req.userInfo;
+    let code;
+    do {
+        code = generateCode();
+    } while (await Group.exists({code: code}).exec());
+    let newGroup = new Group({
+        name: req.body.name,
+        code: code,
+        master: userInfo.id,
+        description: req.body.description,
+        size: req.body.size,
+        characters: [],
+        requests: []
     })
-    newGroup.save((err,data)=>{
-        if(err) return res.status(500).json({Error:err,status:500});
-        return res.status(201).json({data:data,status:201});
+    newGroup.save((err, data) => {
+        if (err) return res.status(500).json({Error: err, status: 500});
+        return res.status(201).json({data: data, status: 201});
     })
 };
 
@@ -44,137 +48,226 @@ const getGroups=(req,res)=>{
         })
     }
 }
+const getMyGroups=(req,res)=>{
+    let userInfo = req.userInfo;
+    let user = req.params.user;
+    if(user === userInfo.id)
+        Group.find({characters:{user:userInfo.id}}, (err, data) => {
+            if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
+            else return res.status(200).json({data: data, status: 200});
+        })
+    else return res.status(401).send();
+}
 
 const editGroup=(req,res)=>{
+    let userInfo=req.userInfo;
     let id=req.body.id;
     let description=req.body.description;
     let size=req.body.size;
-    if(size>5) return res.status(400).json({message:'Size too big',status:400});
-    Group.findByIdAndUpdate(id,{
-        description:description,
-        size:size
-    },(err)=>{
-        if(err) return res.status(500).json({message:'Something went wrong', status:500});
-        return res.status(200).json({message:'Updated',status:200});
+    let master=userInfo.id;
+    Group.findById(id,(err,data)=> {
+        if(err) return res.status(500).json({message:'Something went wrong',status:500});
+        else if(size > 5) return res.status(400).json({message: 'Size too big', status: 400});
+        else if(data.master !== master) return res.status(403).json({message:'User is not master',status:403});
+        else {
+            Group.findByIdAndUpdate(id, {
+                description: description,
+                size: size
+            }, (err) => {
+                if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+                return res.status(200).json({message: 'Updated', status: 200});
+            })
+        }
     })
 }
 const deleteGroup=(req, res) => {
     let id = req.body.id;
-    Group.findById(id, (err, data) => {
-        if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
-        else{
-            Group.findByIdAndDelete(id, (err) => {
-                if (err) return res.status(500).json({message: "Error while deleting", status: 500});
-                codes.add(Group(data).code);
-
-                return res.status(204).json({message:"Group deleted",status:204});
-            });
-        }
+    let userInfo=req.userInfo;
+    let master=userInfo.id;
+    Group.findById(id,(err,data)=>{
+        if (err) return res.status(500).json({message: "Unexpected error", status: 500});
+        else if (!data) return res.status(404).json({message: "Group does not exist", status: 404});
+        else if(data.master!==master) return res.status(403).send();
+        else
+            Group.findByIdAndDelete(id,(err)=>{
+                if(err) return res.status(500).json({message:'Unexpected error',status: 500});
+                else return res.status(204).send();
+            })
     })
 }
 const addPlayer=(req,res)=>{
-    let group=Group.findById(req.body.group,(err,data)=>{
-        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
-        return JSON.parse(data);
-    })
-    let charactersArray=Group(group).characters;
-    let requestsArray=Group(group).requests;
-    if(charactersArray.length===Group(group).size)
-        return res.status(400).json({message:'Group is full',status:400});
-    if(charactersArray.includes(req.body.character))
-        return res.status(400).json({message:'Character is already in group',status:400})
-    charactersArray.push(req.body.character);
-    requestsArray.splice(requestsArray.indexOf(req.body.character),1);
-    Group.findByIdAndUpdate(req.body.group,{
-        characters:charactersArray,
-        requests:requestsArray
-    },(err) => {
-        if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        res.status(200).json({message:'Character added',status:200});
+    let id=req.body.id;
+    let player={user:req.body.user,character:req.body.character};
+    let userInfo=req.userInfo;
+    let master=userInfo.id;
+    let requestID=req.body.request;
+
+    Group.findById(id,async (err, data) => {
+        if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+        else if (!data) return res.status(404).json({message: 'Group does not exist', status: 404});
+        else if (data.master !== master) return res.status(403).send();
+        else {
+            let charactersArray = data.characters;
+            let requestsArray = data.requests;
+            if (charactersArray.length === data.size)
+                return res.status(400).json({message: 'Group is full', status: 400});
+            else if (_.some(charactersArray,{user:player.user}))
+                return res.status(400).json({message: 'User is already in group', status: 400});
+            else if(!_.some(requestsArray,{_id:requestID}))
+                return res.status(400).json({message: 'Request not in list', status: 400});
+
+            else {
+                if (await Character.exists({_id: player.character}).exec()) {
+                    charactersArray.push(player);
+                    _.remove(requestsArray, {_id: ObjectId(requestID)});
+                    Group.findByIdAndUpdate(id, {
+                        characters: charactersArray,
+                        requests: requestsArray
+                    }, (err) => {
+                        if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+                        else return res.status(200).json({message: 'Character added', status: 200});
+                    })
+                } else return res.status(400).json({message: 'User or Character do not exist', status: 400});
+            }
+        }
     })
 }
 const declinePlayer=(req,res)=>{
-    let group=Group.findById(req.body.group,(err,data)=>{
-        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
-        return JSON.parse(data);
-    })
-    let requestsArray=Group(group).requests;
-    requestsArray.splice(requestsArray.indexOf(req.body.character),1);
-    Group.findByIdAndUpdate(req.body.group,{
-        requests:requestsArray
-    },(err) => {
+    let id=req.body.id;
+    let requestID=req.body.request;
+    let userInfo=req.userInfo;
+    let master=userInfo.id;
+    Group.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        res.status(200).json({message:'Player declined',status:200});
+        else if(!data) return res.status(404).json({message:'Group does not exist',status:404});
+        else if(data.master!==master) return res.status(403).json({message:'Not master',status:403});
+        else{
+            let requestsArray=data.requests;
+            if(_.some(requestsArray,{_id:ObjectId(requestID)})) {
+                _.remove(requestsArray, {_id: ObjectId(requestID)});
+                Group.findByIdAndUpdate(id, {
+                    requests: requestsArray
+                }, (err) => {
+                    if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+                    else return res.status(200).json({message: 'Player declined', status: 200});
+                })
+            }
+            else return res.status(400).json({message:'Request not in list',status:400});
+        }
     })
 }
 const removePlayer=(req,res)=>{
-    let group=Group.findById(req.body.group,(err,data)=>{
-        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
-        return JSON.parse(data);
-    })
-    let charactersArray=Group(group).characters;
-    charactersArray.splice(charactersArray.indexOf(req.body.character),1);
-    Group.findByIdAndUpdate(req.body.group,{
-        characters:charactersArray
-    },(err) => {
+    let id=req.body.id;
+    let playerID=req.body.playerid;
+    let userInfo=req.userInfo;
+    let master=userInfo.id;
+    Group.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        res.status(200).json({message:'Player removed',status:200});
+        else if(!data) return res.status(404).json({message:'Group does not exist',status:404});
+        else if(data.master!==master) return res.status(403).send();
+        else{
+            let charactersArray=data.characters;
+            if(_.some(charactersArray,{_id:ObjectId(playerID)})) {
+                _.remove(charactersArray, {_id: ObjectId(playerID)});
+                Group.findByIdAndUpdate(id, {
+                    characters: charactersArray
+                }, (err) => {
+                    if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+                    else return res.status(200).json({message: 'Player removed', status: 200});
+                })
+            }
+            else return res.status(400).json({message:'Player not in list',status:400});
+        }
     })
 }
 const requestJoin=(req,res)=>{
-    let characterid=req.body.characterid;
-    let groupid=req.body.groupid;
-    let group=Group.findById(groupid,(err,data)=>{
-        if(err || !data) return res.status(500).json({message:'Something went wrong',status:500})
-        return JSON.parse(data);
-    })
-    let requestArray=Group(group).characters;
-    requestArray.push(characterid);
-    Group.findByIdAndUpdate(groupid,{
-        requests:requestArray
-    },(err)=>{
-        if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        return res.status(200).json({message:'Request sent',status:200});
+    let userInfo=req.userInfo;
+    let player={user:userInfo.id,character:req.body.character};
+    let id=req.body.id;
+    Character.findById(player.character,(err,data)=> {
+        if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+        else if (!data) return res.status(404).json({message: 'Group does not exist', status: 404});
+        else if(data.user !== player.user) return res.status(400).json({message:'Character not in user list',status:400});
+        else {
+            Group.findById(id, (err, data) => {
+                if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+                else if (!data) return res.status(404).json({message: 'Group does not exist', status: 404});
+                else if (data.master === player.user) return res.status(400).json({
+                    message: 'User is master',
+                    status: 400
+                });
+                else {
+                    let requestArray = data.requests;
+                    let charactersArray = data.characters;
+                    if (_.some(charactersArray, {user: player.user}) || _.some(requestArray, {user: player.user}))
+                        return res.status(400).json({message: "Cannot send more than one request"});
+                    //group is full
+                    else if (charactersArray.length === data.size) return res.status(400).json({
+                        message: "Group is full",
+                        status: 400
+                    });
+                    else {
+                        requestArray.push(player);
+                        Group.findByIdAndUpdate(id, {
+                            requests: requestArray
+                        }, (err) => {
+                            if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+                            else return res.status(200).json({message: 'Request sent', status: 200});
+                        })
+                    }
+                }
+            })
+        }
     })
 }
 
 const newMessage=(req,res)=>{
-    let groupid=req.body.groupid;
-    let history=Group.findById(groupid,(err,data)=>{
+    let id=req.body.id;
+    let userInfo=req.userInfo;
+    let user=userInfo.id;
+    let username=userInfo.username;
+    let isMaster=false;
+    let message=req.body.message;
+    Group.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        return JSON.parse(data);
-    })
-    //if user is not in group
-    if(!Group(history).characters.includes({user:req.body.userid}))
-        return res.status(403).json({message:'User is not in group',status:403});
+        else if(!data) return res.status(404).json({message:'Group does not exist',status:404});
+        else {
+            let charactersArray=data.characters;
+            let messages=data.messages
+            //if user is not in group
+            if(!_.some(charactersArray,{user:user})) return res.status(403).json({message:'User in not in group',status:403});
+            if(user===data.master) isMaster=true;
+            messages.push({username:username,message:message,isMaster:isMaster});
+            Group.findByIdAndUpdate(id,{
+                messages:messages
+            },(err)=>{
+                if(err) return res.status(500).json({message:'Something went wrong',status:500});
+                return res.status(200).json({message:'Message sent',status:200})
+            })
 
-    history=Group(history).messages;
-    history.push({username:req.body.username,message:req.body.message,isMaster:req.body.master});
-    Group.findByIdAndUpdate(groupid,{
-        messages:history
-    },(err)=>{
-        if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        return res.status(200).json({message:'Message sent',status:200})
+        }
     })
 }
 
 const getMessages=(req,res)=>{
-    let groupid=req.query.groupid;
-    let history=Group.findById(groupid,(err,data)=>{
+    let id=req.query.id;
+    let user=req.body.user;
+    Group.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
-        return JSON.parse(data);
+        else if(!data) return res.status(404).json({message:'Group does not exist',status:404})
+        else{
+            let messages=data.messages;
+            let charactersArray=data.characters;
+            if(!_.some(charactersArray,{user:user})) return res.status(403).json({message:'User is not in group',status:403});
+            else return res.status(200).json(messages);
+        }
     })
-    //if user is not in group
-    if(!Group(history).characters.includes({user:req.body.userid}))
-        return res.status(403).json({message:'User is not in group',status:403});
-
-    history=Group(history).messages;
-    return res.status(200).json(history);
 }
 
 module.exports = {
     newGroup,
     getGroups,
+    getMyGroups,
     editGroup,
     deleteGroup,
     addPlayer,

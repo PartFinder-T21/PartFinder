@@ -1,22 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const groupController = require('../controllers/group');
+const tokenChecker = require("../tokenChecker");
 
 //methods for managing groups
-router.post('/group',groupController.newGroup);
+router.post('/group',tokenChecker,groupController.newGroup);
 router.get('/group',groupController.getGroups);
-router.put('/group',groupController.editGroup);
-router.delete('/group',groupController.deleteGroup);
+router.get('/group/:user',tokenChecker,groupController.getMyGroups);
+router.put('/group',tokenChecker,groupController.editGroup);
+router.delete('/group',tokenChecker,groupController.deleteGroup);
 
 //methods for handling player requests
-router.put('/group/accept',groupController.addPlayer);
-router.put('/group/decline',groupController.declinePlayer);
-router.put('/group/remove',groupController.removePlayer);
-router.put('/group/request',groupController.requestJoin);
+router.put('/group/accept',tokenChecker,groupController.addPlayer);
+router.put('/group/decline',tokenChecker,groupController.declinePlayer);
+router.put('/group/remove',tokenChecker,groupController.removePlayer);
+router.put('/group/request',tokenChecker,groupController.requestJoin);
 
 //methods for player interaction
-router.put('/group/chat',groupController.newMessage);
-router.get('/group/chat',groupController.getMessages);
+router.put('/group/chat',tokenChecker,groupController.newMessage);
+router.get('/group/chat',tokenChecker,groupController.getMessages);
 //router.put('/group/chat',groupController.throwDice);
 
 module.exports = router;
