@@ -15,7 +15,6 @@ app.use(cookie_parser());
 app.use(express.json());
 app.use('/',routes);
 
-console.log("routes")
 mongoose.connect(
     process.env.MONGODB_URI,
     { useNewUrlParser: true, useUnifiedTopology: true },

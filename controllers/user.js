@@ -78,7 +78,8 @@ const getUser=(req,res)=>{
 
 const editUser=(req,res)=>{
     let id=req.body.id;
-    let myId=req.body.myId;
+    let userInfo = req.userInfo;
+    let myId=userInfo.id;
     if(id === myId){
         let username=req.body.username;
         let image=req.body.image;
@@ -97,7 +98,8 @@ const editUser=(req,res)=>{
 
 const upVote=(req,res)=>{
     let id=req.body.id;
-    let myId=req.body.myId;
+    let userInfo = req.userInfo;
+    let myId=userInfo.id;
     if(myId) {
         User.findById(id,(err, data) => {
             if (err) return res.status(500).json({message: 'Unexpected error', status: 500});
@@ -121,7 +123,8 @@ const upVote=(req,res)=>{
 }
 const downVote=(req,res)=>{
     let id=req.body.id;
-    let myId=req.body.myId;
+    let userInfo = req.userInfo;
+    let myId=userInfo.id;
     if(myId) {
         User.findById(id,(err, data) => {
             if (err) return res.status(500).json({message: 'Unexpected error', status: 500});

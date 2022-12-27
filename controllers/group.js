@@ -3,6 +3,8 @@ const Character = require("../models/character");
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
+const axios = require("axios");
+const {response} = require("express");
 const generateCode = ()=>{
     let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let length=5;
@@ -52,7 +54,7 @@ const getMyGroups=(req,res)=>{
     let userInfo = req.userInfo;
     let user = req.params.user;
     if(user === userInfo.id)
-        Group.find({characters:{user:userInfo.id}}, (err, data) => {
+        Group.find({$or:[{characters:{user:userInfo.id}},{master:userInfo.id}]}, (err, data) => {
             if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
             else return res.status(200).json({data: data, status: 200});
         })
@@ -113,7 +115,7 @@ const addPlayer=(req,res)=>{
                 return res.status(400).json({message: 'Group is full', status: 400});
             else if (_.some(charactersArray,{user:player.user}))
                 return res.status(400).json({message: 'User is already in group', status: 400});
-            else if(!_.some(requestsArray,{_id:requestID}))
+            else if(!_.some(requestsArray,{_id: ObjectId(requestID)}))
                 return res.status(400).json({message: 'Request not in list', status: 400});
 
             else {
@@ -235,15 +237,20 @@ const newMessage=(req,res)=>{
             let charactersArray=data.characters;
             let messages=data.messages
             //if user is not in group
-            if(!_.some(charactersArray,{user:user})) return res.status(403).json({message:'User in not in group',status:403});
-            if(user===data.master) isMaster=true;
-            messages.push({username:username,message:message,isMaster:isMaster});
-            Group.findByIdAndUpdate(id,{
-                messages:messages
-            },(err)=>{
-                if(err) return res.status(500).json({message:'Something went wrong',status:500});
-                return res.status(200).json({message:'Message sent',status:200})
-            })
+            if(user !== data.master && !_.some(charactersArray,{user:user})){
+                console.log("stocazzo che posti");
+                return res.status(403).json({message:'User in not in group',status:403});
+            }
+            else {
+                if (user === data.master) isMaster = true;
+                messages.push({username: username, message: message, isMaster: isMaster});
+                Group.findByIdAndUpdate(id, {
+                    messages: messages
+                }, (err) => {
+                    if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
+                    return res.status(201).json({message: 'Message sent', status: 201})
+                })
+            }
 
         }
     })
@@ -251,7 +258,8 @@ const newMessage=(req,res)=>{
 
 const getMessages=(req,res)=>{
     let id=req.query.id;
-    let user=req.body.user;
+    let userInfo=req.userInfo;
+    let user=userInfo.id;
     Group.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
         else if(!data) return res.status(404).json({message:'Group does not exist',status:404})
@@ -262,6 +270,30 @@ const getMessages=(req,res)=>{
             else return res.status(200).json(messages);
         }
     })
+}
+
+const rollDice=(req,res)=>{
+    let numDadi=req.query.num;
+    let dado=req.query.type;
+    let id=req.body.id;
+    let url='http://localhost:8080/dice?num='+numDadi+'&type='+dado;
+    axios.get(url)
+        .then((response)=>{
+            let message=response.data.result;
+            url='http://localhost:8080/group/chat';
+            axios.put(url,{id:id,message:message},{headers: {cookie: req.headers.cookie}})
+                .then((response)=>{
+                    return res.status(201).send();
+                })
+                .catch((error)=>{
+                    return res.status(534).json({Error:error});
+                })
+        })
+        .catch((error)=>{
+            return res.status(500).json({Error:error,status:500});
+        })
+
+
 }
 
 module.exports = {
@@ -275,5 +307,6 @@ module.exports = {
     removePlayer,
     requestJoin,
     newMessage,
-    getMessages
+    getMessages,
+    rollDice
 };
