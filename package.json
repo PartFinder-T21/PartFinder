@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "swagger-autogen": "node ./swagger.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,9 @@
     "lodash": "^4.17.21",
     "mongodb": "^4.12.1",
     "mongoose": "^6.8.0",
-    "mongoose-express-api": "0.0.3"
+    "mongoose-express-api": "0.0.3",
+    "swagger-autogen": "^2.22.0",
+    "swagger-jsdoc": "^6.2.7",
+    "swagger-ui-express": "^4.6.0"
   }
 }

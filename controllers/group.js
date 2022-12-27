@@ -286,7 +286,7 @@ const rollDice=(req,res)=>{
                     return res.status(201).send();
                 })
                 .catch((error)=>{
-                    return res.status(534).json({Error:error});
+                    return res.status(500).json({Error:error});
                 })
         })
         .catch((error)=>{

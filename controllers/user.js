@@ -72,6 +72,7 @@ const getUser=(req,res)=>{
     else
         User.findById(id,'username image description reputation',(err,data)=>{
             if(err) return res.status(500).json({message:'Unexpected error',status:500});
+            else if(!data) return res.status(404).json({message:'User does not exist',status:404});
             else return res.status(200).json(data);
         })
 }
@@ -100,7 +101,7 @@ const upVote=(req,res)=>{
     let id=req.body.id;
     let userInfo = req.userInfo;
     let myId=userInfo.id;
-    if(myId) {
+    if(myId !== id) {
         User.findById(id,(err, data) => {
             if (err) return res.status(500).json({message: 'Unexpected error', status: 500});
             else if (data.upvotes.includes(myId)) return res.status(400).json({
@@ -125,7 +126,7 @@ const downVote=(req,res)=>{
     let id=req.body.id;
     let userInfo = req.userInfo;
     let myId=userInfo.id;
-    if(myId) {
+    if(myId !== id) {
         User.findById(id,(err, data) => {
             if (err) return res.status(500).json({message: 'Unexpected error', status: 500});
             else if (data.downvotes.includes(myId)) return res.status(400).json({

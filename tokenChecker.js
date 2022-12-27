@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const tokenChecker = function(req, res, next) {
 // header or url parameters or post parameters
     if(!req.cookies.tk) {
-        return res.status(452).send();
+        return res.status(401).send();
     }
     let info = req.cookies.tk;
     let token = info.token;
