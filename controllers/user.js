@@ -39,7 +39,7 @@ const newUser = async(req,res) => {
 const login = (req,res) => {
     User.findOne({$or:[{email:req.body.input},{username:req.body.input}]},(err,data)=>{
         if(err) return res.status(500).json({message:"Unexpected error",status:500});
-        else if(!data) return res.status(400).json({message:"Username or password wrong email check",status:400});
+        else if(!data) return res.status(400).json({message:"Username or password is wrong",status:400});
         else {
             bcrypt.compare(req.body.password, data.password, (err, result) => {
                 if (err) {
@@ -55,7 +55,7 @@ const login = (req,res) => {
                     }
                     return res.cookie('tk',save).status(200).send();
                 } else {
-                    return res.status(400).json({Result:result,message: "Username or password is wrong password check", status: 400});
+                    return res.status(400).json({Result:result,message: "Username or password is wrong", status: 400});
                 }
             })
         }

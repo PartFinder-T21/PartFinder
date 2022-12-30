@@ -6,6 +6,6 @@ const tokenChecker = require("../tokenChecker");
 router.post('/character',tokenChecker,characterController.newCharacter);
 router.get('/character',tokenChecker,characterController.getCharacters);
 router.put('/character',tokenChecker,characterController.editCharacter);
-router.delete('/character',tokenChecker,characterController.deleteOneCharacter)
+router.delete('/character',tokenChecker,characterController.deleteOneCharacter);
 
 module.exports = router;

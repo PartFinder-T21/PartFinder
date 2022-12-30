@@ -27,7 +27,8 @@ const newGroup = async (req, res) => {
         description: req.body.description,
         size: req.body.size,
         characters: [],
-        requests: []
+        requests: [],
+        messages: []
     })
     newGroup.save((err, data) => {
         if (err) return res.status(500).json({Error: err, status: 500});
@@ -58,7 +59,7 @@ const getMyGroups=(req,res)=>{
             if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
             else return res.status(200).json({data: data, status: 200});
         })
-    else return res.status(401).send();
+    else return res.status(403).send();
 }
 
 const editGroup=(req,res)=>{
@@ -238,7 +239,6 @@ const newMessage=(req,res)=>{
             let messages=data.messages
             //if user is not in group
             if(user !== data.master && !_.some(charactersArray,{user:user})){
-                console.log("stocazzo che posti");
                 return res.status(403).json({message:'User in not in group',status:403});
             }
             else {
@@ -292,8 +292,6 @@ const rollDice=(req,res)=>{
         .catch((error)=>{
             return res.status(500).json({Error:error,status:500});
         })
-
-
 }
 
 module.exports = {

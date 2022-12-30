@@ -4,9 +4,7 @@ const throwDice=(req,res)=>{
     let result=0;
     let dadi=[4,6,8,20];
     if(!dadi.includes(dado) || numDadi <= 0 || numDadi > 100){
-        console.log(dado);
-        console.log(dadi.includes(dado));
-        return res.status(400).json({message:'Bad requestDadoz',status:400});
+        return res.status(400).json({message:'Bad request',status:400});
     }
     else{
         if(dado !== 20){
@@ -26,7 +24,6 @@ const throwDice=(req,res)=>{
             return res.status(200).json({result:string,status:200});
         }
     }
-
 }
 
 module.exports={throwDice}

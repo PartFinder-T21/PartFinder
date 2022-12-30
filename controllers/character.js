@@ -55,7 +55,6 @@ const editCharacter=(req,res)=>{
                 return res.status(200).json({message:'Updated',status:200});
             })
     })
-
 }
 const deleteOneCharacter=(req,res)=>{
     let id=req.body.id;
