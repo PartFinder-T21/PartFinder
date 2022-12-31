@@ -1,0 +1,34 @@
+<h1>PartFinder</h1>
+<hr>
+<span>Logged User:</span> <span id="loggedUser"></span><br>
+<h2>Login</h2>
+<form action="../controllers/user.js" method="post" name="loginform" id="loginform">
+    <input name="email" value="mario.rossi@unitn.com" id="loginEmail"/><br>
+    <input name="password" value="123" id="loginPassword"/><br>
+    <button type="button" onclick="login()">LogIn</button>
+</form>
+
+<h2>Registrazione</h2>
+<form action="../controllers/user.js" method="post" name="registerform" id="registerform">
+    <input name="email" value="mario.rossi@unitn.com" id="registerEmail"/><br>
+    <input name="username" value="mario" id="registerUsername"/><br>
+    <input name="description" value="DM" id="registerDescription"/><br>
+    <input name="password" value="123" id="registerPassword"/><br>
+    <input name="password2" value="123" id="registerPassword2"/><br>
+    <button type="button" onclick="register()">Register</button>
+</form>
+<h2>Modifica utente</h2>
+<form action="../controllers/user.js" method="post" name="editform" id="editform">
+    <input name="username" value="mario" id="editUsername"/><br>
+    <input name="description" value="DM" id="editDescription"/><br>
+    <button type="button" onclick="edit()">Register</button>
+</form>
+<hr>
+<h2>Crea gruppo</h2>
+<form action="../controllers/user.js" method="post" name="newgroupform" id="newgroupform">
+    <input name="name" value="gruppo1" id="newgroupname"/><br>
+    <input name="description" value="pathfinder" id="newgroupDescription"/><br>
+    <input name="size" value="4" id="newgroupsize"/><br>
+    <button type="button" onclick="newgroup()">Register</button>
+</form>
+<script src="script.js"></script>
