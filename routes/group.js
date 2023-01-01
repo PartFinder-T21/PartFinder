@@ -18,7 +18,7 @@ router.put('/group/request',tokenChecker,groupController.requestJoin);
 
 //methods for player interaction
 router.put('/group/chat',tokenChecker,groupController.newMessage);
-router.get('/group/chat',tokenChecker,groupController.getMessages);
+router.get('/group/chat/:code',tokenChecker,groupController.getMessages);
 router.put('/group/chat/roll',tokenChecker,groupController.rollDice);
 
 module.exports = router;

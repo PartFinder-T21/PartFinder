@@ -32,6 +32,7 @@ const getCharacters=(req,res)=>{
     else
         Character.findById(id,(err,data)=>{
             if (err) return res.status(500).json({Error: err, status: 500});
+            else if(!data || data.user !== user) return res.status(404).send();
             else return res.status(200).json({data: data, status: 200});
         })
 }

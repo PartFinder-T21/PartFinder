@@ -16,24 +16,28 @@ const generateCode = ()=>{
 }
 const newGroup = async (req, res) => {
     let userInfo = req.userInfo;
-    let code;
-    do {
-        code = generateCode();
-    } while (await Group.exists({code: code}).exec());
-    let newGroup = new Group({
-        name: req.body.name,
-        code: code,
-        master: userInfo.id,
-        description: req.body.description,
-        size: req.body.size,
-        characters: [],
-        requests: [],
-        messages: []
-    })
-    newGroup.save((err, data) => {
-        if (err) return res.status(500).json({Error: err, status: 500});
-        return res.status(201).json({data: data, status: 201});
-    })
+    let size=req.body.size;
+    if(size>=1 && size <=5) {
+        let code;
+        do {
+            code = generateCode();
+        } while (await Group.exists({code: code}).exec());
+        let newGroup = new Group({
+            name: req.body.name,
+            code: code,
+            master: userInfo.id,
+            description: req.body.description,
+            size: req.body.size,
+            characters: [],
+            requests: [],
+            messages: []
+        })
+        newGroup.save((err, data) => {
+            if (err) return res.status(500).json({Error: err, status: 500});
+            return res.status(201).json({data: data, status: 201});
+        })
+    }
+    else return res.status(400).json({message:'Size value is not valid',status:400});
 };
 
 const getGroups=(req,res)=>{
@@ -71,6 +75,8 @@ const editGroup=(req,res)=>{
     Group.findById(id,(err,data)=> {
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
         else if(size > 5) return res.status(400).json({message: 'Size too big', status: 400});
+        else if(size < 1) return res.status(400).json({message: 'Size too small',status:400});
+        else if(!data) return res.status(404).json({message: 'Group does not exist',status:404});
         else if(data.master !== master) return res.status(403).json({message:'User is not master',status:403});
         else {
             Group.findByIdAndUpdate(id, {
@@ -189,8 +195,7 @@ const requestJoin=(req,res)=>{
     let id=req.body.id;
     Character.findById(player.character,(err,data)=> {
         if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
-        else if (!data) return res.status(404).json({message: 'Group does not exist', status: 404});
-        else if(data.user !== player.user) return res.status(400).json({message:'Character not in user list',status:400});
+        else if(!data || data.user !== player.user) return res.status(400).json({message:'Character not in user list',status:400});
         else {
             Group.findById(id, (err, data) => {
                 if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
@@ -215,7 +220,7 @@ const requestJoin=(req,res)=>{
                             requests: requestArray
                         }, (err) => {
                             if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
-                            else return res.status(200).json({message: 'Request sent', status: 200});
+                            else return res.status(201).json({message: 'Request sent', status: 201});
                         })
                     }
                 }
@@ -257,23 +262,23 @@ const newMessage=(req,res)=>{
 }
 
 const getMessages=(req,res)=>{
-    let id=req.query.id;
+    let code=req.params.code;
     let userInfo=req.userInfo;
     let user=userInfo.id;
-    Group.findById(id,(err,data)=>{
+    Group.findOne({code:code},(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
         else if(!data) return res.status(404).json({message:'Group does not exist',status:404})
         else{
             let messages=data.messages;
             let charactersArray=data.characters;
-            if(!_.some(charactersArray,{user:user})) return res.status(403).json({message:'User is not in group',status:403});
-            else return res.status(200).json(messages);
+            if(user !== data.master && !_.some(charactersArray,{user:user})) return res.status(403).json({message:'User is not in group',status:403});
+            return res.status(200).json(messages);
         }
     })
 }
-
 const rollDice=(req,res)=>{
     let numDadi=req.query.num;
+
     let dado=req.query.type;
     let id=req.body.id;
     let url='http://localhost:8080/dice?num='+numDadi+'&type='+dado;
