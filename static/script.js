@@ -18,8 +18,6 @@ function login() {loggedUser
         })
         .then((resp) => {
             resp.json();
-            console.log(Cookies.get('name'));
-            console.log(Cookies.get('tk'));
             document.getElementById('loggedUser').innerHTML=Cookies.get('name')
         })/*
         .then(function(data) {
@@ -75,11 +73,12 @@ function newgroup() {//TO FINISH------------------------------------------------
     var description = document.getElementById("newgroupDescription").value;
     var size = document.getElementById("newgroupsize").value;
     if(!isNaN(parseFloat(size)) && isFinite(size)) {
-        fetch('localhost:8080/group'
+        fetch('http://localhost:8080/group'
             , {
                 method: 'POST'
                 ,
                 headers: {'Content-Type': 'application/json'},
+                credentials:'include',
                 body: JSON.stringify({name: nome, description: description, size: size}),
             }).then((resp) => resp.json());
     }else {
@@ -90,7 +89,7 @@ function newgroup() {//TO FINISH------------------------------------------------
 
 function cercagruppo() {
     var code = document.getElementById("getgroupscode").value;
-    fetch('localhost:8080/group'
+    fetch('localhost:8080/group?='+code
         , {
             method: 'GET'
             ,
