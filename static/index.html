@@ -1,10 +1,10 @@
 <h1>PartFinder</h1>
 <hr>
-<span>Logged User:</span> <span id="loggedUser"></span><br>
+<span>Logged User:</span><span id="loggedUser"></span><br>
 <h2>Login</h2>
 <form action="../controllers/user.js" method="post" name="loginform" id="loginform">
-    <input name="email" value="mario.rossi@unitn.com" id="loginEmail"/><br>
-    <input name="password" value="123" id="loginPassword"/><br>
+    <input name="email" value="master" id="loginEmail"/><br>
+    <input name="password" value="bacon" id="loginPassword"/><br>
     <button type="button" onclick="login()">LogIn</button>
 </form>
 
@@ -73,4 +73,6 @@
     <input name="inventory" value="Ratto morto" id="editcharacterinventory"/><br>
     <button type="button" onclick="editcharacter()">Crea</button>
 </form>
+<script src="https://code.jquery.com/jquery-3.6.3.slim.min.js" integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo=" crossorigin="anonymous"></script>
+<script src="js.cookie.js"></script>
 <script src="script.js"></script>

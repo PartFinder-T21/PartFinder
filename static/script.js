@@ -2,22 +2,33 @@ var loggedUser = {}
 function login() {loggedUser
     var email = document.getElementById("loginEmail").value;
     var password = document.getElementById("loginPassword").value;
-    fetch('localhost:8080/user/login'
-        , {
-            method: 'POST'
-            ,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { email: email, password: password } ),
-        }).then((resp) => resp.json())
+    let values={
+        input:email,
+        password:password
+    }
+    fetch('http://localhost:8080/user/login',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': 'true',
+            },
+            credentials:'include',
+            body: JSON.stringify(values)
+        })
+        .then((resp) => {
+            resp.json();
+            console.log(Cookies.get('name'));
+            console.log(Cookies.get('tk'));
+            document.getElementById('loggedUser').innerHTML=Cookies.get('name')
+        })/*
         .then(function(data) {
             loggedUser.token = data.token;
             loggedUser.email = data.email;
             loggedUser.id = data.id;
             loggedUser.self = data.self;
             document.getElementById("loggedUser").innerHTML = loggedUser.email;
-            loadLendings();
-            return;
-        }).catch( error => console.error(error) );
+        }).catch( error => console.error(error) );*/
 };
 
 function register() {
@@ -28,7 +39,7 @@ function register() {
     var password2 = document.getElementById("registerPassword2").value;
     let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{6,}$/;
     if(regex.test(password)&&password===password2) {
-        fetch('localhost:8080/user/register'
+        fetch('http://localhost:8080/user/register'
             , {
                 method: 'POST'
                 ,
@@ -49,7 +60,7 @@ function register() {
 function edit() {//TO DO -------------------------------------------------------------------------------------
     var username = document.getElementById("editUsername").value;
     var description = document.getElementById("editDescription").value;
-    fetch('localhost:8080/user'
+    fetch('http://localhost:8080/user'
         , {
             method: 'PUT'
             ,
@@ -89,14 +100,13 @@ function cercagruppo() {
 };
 
 function visualizzagruppi() {//TO FINISH------------------------------------------------------------------------------
-    var code = document.getElementById("getgroupscode").value;
-    fetch('localhost:8080/group/:user'
-        , {
+    //var code = document.getElementById("getgroupscode").value;
+    fetch('http://localhost:8080/group',{
             method: 'GET'
-            ,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { code: code} ),
-        }).then((resp) => resp.json());
+            //body: JSON.stringify( { code: code} ),
+        })
+        .then((resp) => resp.json())
+        .then((data)=>{console.log(data)});
 };
 
 function editgruppi() {//TO DO------------------------------------------------------------------------------
