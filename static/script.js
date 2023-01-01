@@ -159,3 +159,4 @@ function editcharacter() {
             body: JSON.stringify({name: name, class: classe, stats: stats,inventory: inventory}),
         }).then((resp) => resp.json());
 };
+
