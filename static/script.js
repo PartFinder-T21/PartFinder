@@ -31,30 +31,15 @@ function register() {
     var description = document.getElementById("registerDescription").value;
     var password = document.getElementById("registerPassword").value;
     var password2 = document.getElementById("registerPassword2").value;
-    var credentials={
-        email:email,
-        username:username,
-        password:password,
-        description:description
-    }
     let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{6,}$/;
     if(regex.test(password)&&password===password2) {
-        fetch('http://localhost:8080/user/register', {
-                method: 'POST',
-                headers:
-                {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Credentials': 'true'
-                },
-                credentials:'include',
-                body: JSON.stringify(credentials)
-            })
-            .then((resp) =>
-            {
-                if(resp.status === 201)
-                    document.getElementById('loggedUser').innerHTML=Cookies.get('name')
-
-            })
+        fetch('http://localhost:8080/user/register'
+            , {
+                method: 'POST'
+                ,
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: email, username: username, description: description, password: password}),
+            }).then((resp) => resp.json());
     }else {
         console.log("La password non soddisfa i criteri richiesti:\n" +
             "al meno 6 caratteri\n" +
@@ -66,7 +51,7 @@ function register() {
     }
 };
 
-function edit() {//TO DO -------------------------------------------------------------------------------------
+function edit() {
     var username = document.getElementById("editUsername").value;
     var description = document.getElementById("editDescription").value;
     fetch('http://localhost:8080/user'
@@ -117,46 +102,44 @@ function visualizzatuttigruppi() {
     })
         .then((resp) => resp.json())
         .then((data)=>{
-            console.log(data);
-            console.log(data.data);
-            const array = data.data;
-            const table = document.getElementById("tabellagrouppi");
+            const table = document.createElement("table");
 
+            const array=data.data;
             for (let i = 0; i < array.length; i++) {
                 const row = document.createElement("tr");
                 const cell1 = document.createElement("td");//code,master,name,description,size
-                cell1.textContent = array[i].code+"\n"+array[i].master+"\n"+array[i].name+"\n"
-                    +array[i].description+"\n"+array[i].size;
-                console.log(array[i]);
+                cell1.textContent = "Codice: "+array[i].code+"\n Nome gruppo: "+array[i].name+"\n Descrizione: "
+                    +array[i].description+"\n Dimensione: "+array[i].size;
                 row.appendChild(cell1);
                 table.appendChild(row);
             }
+            document.body.appendChild(table);
         });
 };
 function visualizzagruppi() {
-    fetch('http://localhost:8080/group',{
-            method: 'GET'
+    fetch('http://localhost:8080/group/:user?='+Cookies.get('id'),{
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'},
+        credentials:'include',
 
         })
         .then((resp) => resp.json())
         .then((data)=>{
-                const table = document.createElement("table");
-
-                for (let i = 0; i < data.length; i++) {
-                    if (Cookies.get('name') == data[i].master) {
-                        const row = document.createElement("tr");
-                        const cell1 = document.createElement("td");//code,master,name,description,size
-                        cell1.textContent = data[i].code + "\n" + data[i].master + "\n" + data[i].name + "\n"
-                            + data[i].description + "\n" + data[i].size;
-                        row.appendChild(cell1);
-                        table.appendChild(row);
-                    }
-                }
-                document.body.appendChild(table);
-            });
+            const table = document.createElement("table");
+            const array=data.data;
+            for (let i = 0; i < array.length; i++) {
+                const row = document.createElement("tr");
+                const cell1 = document.createElement("td");
+                cell1.textContent = "Codice: "+array[i].code+"\n Nome gruppo: "+array[i].name+"\n Descrizione: "
+                    +array[i].description+"\n Dimensione: "+array[i].size;
+                row.appendChild(cell1);
+                table.appendChild(row);
+            }
+            document.body.appendChild(table);
+        });
 };
 
-function editgruppi() {//TO DO------------------------------------------------------------------------------
+function editgruppi() {
     var description = document.getElementById("editgroupsdescription").value;
     var size = document.getElementById("editgroupssize").value;
     if(!isNaN(parseFloat(size)) && isFinite(size)) {
