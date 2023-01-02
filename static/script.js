@@ -1,4 +1,7 @@
 var loggedUser = {}
+if(Cookies.get('name'))
+    document.getElementById('loggedUser').innerHTML=Cookies.get('name')
+
 function login() {loggedUser
     var email = document.getElementById("loginEmail").value;
     var password = document.getElementById("loginPassword").value;
@@ -19,14 +22,7 @@ function login() {loggedUser
         .then((resp) => {
             resp.json();
             document.getElementById('loggedUser').innerHTML=Cookies.get('name')
-        })/*
-        .then(function(data) {
-            loggedUser.token = data.token;
-            loggedUser.email = data.email;
-            loggedUser.id = data.id;
-            loggedUser.self = data.self;
-            document.getElementById("loggedUser").innerHTML = loggedUser.email;
-        }).catch( error => console.error(error) );*/
+        })
 };
 
 function register() {
@@ -164,25 +160,36 @@ function newcharacter() {
     var stat2 = document.getElementById("newcharacterstat2").value;
     var stat3 = document.getElementById("newcharacterstat3").value;
     var stat4 = document.getElementById("newcharacterstat4").value;
-    var stats=[];
-    stats.push(stat1,stat2,stat3,stat4);
-        fetch('http://localhost:8080/character'
-            , {
-                method: 'POST'
-                ,
+    var stats=[{stat:"strength",value:stat1},{stat:"dexterity",value:stat2},{stat:"intelligence",value:stat3},{stat:"charisma",value:stat4}]
+        fetch('http://localhost:8080/character',
+            {
+                method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({name: name, class: classe, stats: stats,}),
-            }).then((resp) => resp.json());
+                credentials:'include',
+                body: JSON.stringify({name: name, class: classe, stats: stats}),
+            })
+            .then((resp) =>
+            {
+                resp.json();
+                if(resp.status === 201)
+                    alert('Character created');
+            });
 };
 function visualizzapersonaggi() {//TO DO-----------------------------------------------------------------------
-    stats.push(stat1,stat2,stat3,stat4);
-    fetch('http://localhost:8080/character'
-        , {
-            method: 'GET'
-            ,
+    fetch('http://localhost:8080/character',
+        {
+            method: 'GET',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name: name, class: classe, stats: stats,}),
-        }).then((resp) => resp.json());
+            credentials:'include'
+        })
+        .then((resp) =>
+        {
+            resp.json()
+        })
+        .then((data)=>
+        {
+
+        })
 };
 function editcharacter() {
     var name = document.getElementById("editcharactername").value;
