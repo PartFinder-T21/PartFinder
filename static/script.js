@@ -176,7 +176,7 @@ function newcharacter() {
                     alert('Character created');
             });
 };
-function visualizzapersonaggi(id) {//TO DO-----------------------------------------------------------------------
+function visualizzapersonaggi() {//TO DO-----------------------------------------------------------------------
     fetch('http://localhost:8080/character',
         {
             method: 'GET',
@@ -189,7 +189,8 @@ function visualizzapersonaggi(id) {//TO DO--------------------------------------
             console.log(data);
             const array = data.data;
             let statarray = [];
-            const table = document.getElementById(id);
+            let inventory = [];
+            const table = document.getElementById('tabellapersonaggi');
             table.innerHTML="";
             for (let i = 0; i < array.length; i++) {
                 const row = document.createElement("tr");
@@ -201,10 +202,17 @@ function visualizzapersonaggi(id) {//TO DO--------------------------------------
                     statarray.push(array[i].stats[j].value);
                     cell1.appendChild(el);
                 }
+                for(let j=0;j<array[i].inventory.length;j++){
+                    const el = document.createElement("ul");
+                    el.innerText = array[i].inventory[j]
+                    inventory.push(array[i].inventory[j]);
+                    cell1.appendChild(el);
+                }
                 const button = document.createElement('button');
                 button.innerText = 'Modifica';
                 button.onclick =()=>{
                     let div = document.getElementById('editcharacterformdiv');
+                    let inventoryDiv = document.getElementById('editcharacterinventory');
                     document.getElementById('characterid').value = array[i]._id
                     document.getElementById("editcharactername").value = array[i].name;
                     document.getElementById('editcharacterclass').value = array[i].class;
@@ -212,6 +220,13 @@ function visualizzapersonaggi(id) {//TO DO--------------------------------------
                     document.getElementById("editcharacterstat2").value = statarray[1];
                     document.getElementById("editcharacterstat3").value = statarray[2];
                     document.getElementById("editcharacterstat4").value = statarray[3];
+                    for(let j=0;j<inventory.length;j++){
+                        let input = document.createElement('input');
+                        input.value = inventory[j];
+                        inventoryDiv.appendChild(input);
+                    }
+                    let input = document.createElement('input');
+                    inventoryDiv.appendChild(input);
                     console.log(document.getElementById('characterid').value);
                     div.style.visibility = "visible";
                 }
@@ -229,19 +244,43 @@ function editcharacter() {
     var stat2 = document.getElementById("editcharacterstat2").value;
     var stat3 = document.getElementById("editcharacterstat3").value;
     var stat4 = document.getElementById("editcharacterstat4").value;
+    var inventory = [];
+    var childDivs = document.getElementById('editcharacterinventory').getElementsByTagName('input');
+    for(let i=0; i< childDivs.length; i++ )
+    {
+        inventory.push(childDivs[i].value);
+    }
     var stats=[{stat:"strength",value:stat1},{stat:"dexterity",value:stat2},{stat:"intelligence",value:stat3},{stat:"charisma",value:stat4}]
+    let send;
+    if(inventory !== [])
+        send = {
+            id:id,
+            name:name,
+            class:classe,
+            stats:stats,
+            inventory:inventory
+        }
+    else
+        send = {
+            id:id,
+            name:name,
+            class:classe,
+            stats:stats,
+        }
     fetch('http://localhost:8080/character',
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             credentials:'include',
-            body: JSON.stringify({name: name, class: classe, stats: stats}),
+            body: JSON.stringify(send),
         })
         .then((resp) =>
         {
             resp.json();
-            if(resp.status === 201)
-                alert('Character created');
+            if(resp.status === 200)
+                alert('Character modified');
+            visualizzapersonaggi();
+
         });
 };
 

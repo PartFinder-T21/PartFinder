@@ -65,7 +65,7 @@
 </form>
 
 <h2>I miei personaggi</h2>
-<button type="button" onclick="visualizzapersonaggi('tabellapersonaggi')">mostra</button>
+<button type="button" onclick="visualizzapersonaggi()">mostra</button>
 <table id="tabellapersonaggi"></table>
 
 <div style="visibility: hidden" id="editcharacterformdiv">
@@ -78,8 +78,8 @@
         dexterity<input name="stat2" value="14" id="editcharacterstat2"/><br>
         intelligence<input name="stat3" value="18" id="editcharacterstat3"/><br>
         charisma<input name="stat4" value="10" id="editcharacterstat4"/><br>
-        <input name="inventory" value="Ratto morto" id="editcharacterinventory"/><br>
-        <button type="button" onclick="editcharacter()">Crea</button>
+        <div id="editcharacterinventory"></div>>
+        <button type="button" onclick="editcharacter()">Modifica</button>
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js" integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo=" crossorigin="anonymous"></script>
