@@ -89,7 +89,7 @@ function newgroup() {//TO FINISH------------------------------------------------
 
 function cercagruppo() {
     var code = document.getElementById("getgroupscode").value;
-    fetch('localhost:8080/group?='+code
+    fetch('http://localhost:8080/group?='+code
         , {
             method: 'GET'
             ,
@@ -98,21 +98,55 @@ function cercagruppo() {
         }).then((resp) => resp.json());
 };
 
-function visualizzagruppi() {//TO FINISH------------------------------------------------------------------------------
-    //var code = document.getElementById("getgroupscode").value;
+
+function visualizzatuttigruppi() {
+
+    fetch('http://localhost:8080/group',{
+        method: 'GET'
+    })
+        .then((resp) => resp.json())
+        .then((data)=>{
+            const table = document.createElement("table");
+
+            for (let i = 0; i < data.length; i++) {
+                const row = document.createElement("tr");
+                const cell1 = document.createElement("td");//code,master,name,description,size
+                cell1.textContent = data[i].code+"\n"+data[i].master+"\n"+data[i].name+"\n"
+                    +data[i].description+"\n"+data[i].size;
+                row.appendChild(cell1);
+                table.appendChild(row);
+            }
+            document.body.appendChild(table);
+        });
+};
+function visualizzagruppi() {
     fetch('http://localhost:8080/group',{
             method: 'GET'
-            //body: JSON.stringify( { code: code} ),
+
         })
         .then((resp) => resp.json())
-        .then((data)=>{console.log(data)});
+        .then((data)=>{
+                const table = document.createElement("table");
+
+                for (let i = 0; i < data.length; i++) {
+                    if (Cookies.get('name') == data[i].master) {
+                        const row = document.createElement("tr");
+                        const cell1 = document.createElement("td");//code,master,name,description,size
+                        cell1.textContent = data[i].code + "\n" + data[i].master + "\n" + data[i].name + "\n"
+                            + data[i].description + "\n" + data[i].size;
+                        row.appendChild(cell1);
+                        table.appendChild(row);
+                    }
+                }
+                document.body.appendChild(table);
+            });
 };
 
 function editgruppi() {//TO DO------------------------------------------------------------------------------
     var description = document.getElementById("editgroupsdescription").value;
     var size = document.getElementById("editgroupssize").value;
     if(!isNaN(parseFloat(size)) && isFinite(size)) {
-        fetch('localhost:8080/group'
+        fetch('http://localhost:8080/group'
             , {
                 method: 'PUT'
                 ,
@@ -132,7 +166,7 @@ function newcharacter() {
     var stat4 = document.getElementById("newcharacterstat4").value;
     var stats=[];
     stats.push(stat1,stat2,stat3,stat4);
-        fetch('localhost:8080/character'
+        fetch('http://localhost:8080/character'
             , {
                 method: 'POST'
                 ,
@@ -142,7 +176,7 @@ function newcharacter() {
 };
 function visualizzapersonaggi() {//TO DO-----------------------------------------------------------------------
     stats.push(stat1,stat2,stat3,stat4);
-    fetch('localhost:8080/character'
+    fetch('http://localhost:8080/character'
         , {
             method: 'GET'
             ,
@@ -160,7 +194,7 @@ function editcharacter() {
     var inventory = document.getElementById("editcharacterinventory").value;
     var stats=[];
     stats.push(stat1,stat2,stat3,stat4);
-    fetch('localhost:8080/character'
+    fetch('http://localhost:8080/character'
         , {
             method: 'PUT'
             ,
