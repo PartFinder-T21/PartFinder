@@ -33,6 +33,7 @@ const newUser = async(req,res) => {
             }
             res.cookie('tk',save);
             res.cookie('name',data.username);
+            res.cookie('id',data._id);
             return res.status(201).send();
 
         }
@@ -60,6 +61,7 @@ const login = (req,res) => {
                     }
                     res.cookie('tk',save);
                     res.cookie('name',data.username);
+                    res.cookie('id',data._id);
                     return res.status(200).json({username:data.username,status:200});
                 } else {
                     return res.status(405).json({Result:result,message: "Username or password is wrong", status: 400});
