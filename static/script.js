@@ -193,38 +193,72 @@ function newcharacter() {
                     alert('Character created');
             });
 };
-function visualizzapersonaggi() {//TO DO-----------------------------------------------------------------------
+function visualizzapersonaggi(id) {//TO DO-----------------------------------------------------------------------
     fetch('http://localhost:8080/character',
         {
             method: 'GET',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json'
+            },
             credentials:'include'
         })
-        .then((resp) =>
-        {
-            resp.json()
-        })
-        .then((data)=>
-        {
-
-        })
+        .then((resp) => resp.json())
+        .then((data)=>{
+            console.log(data);
+            const array = data.data;
+            let statarray = [];
+            const table = document.getElementById(id);
+            table.innerHTML="";
+            for (let i = 0; i < array.length; i++) {
+                const row = document.createElement("tr");
+                const cell1 = document.createElement("td");
+                cell1.textContent = array[i].name+"\n"+array[i].class+"\n";
+                for(let j=0;j<array[i].stats.length;j++){
+                    const el = document.createElement("li");
+                    el.innerText = array[i].stats[j].stat + ': ' + array[i].stats[j].value;
+                    statarray.push(array[i].stats[j].value);
+                    cell1.appendChild(el);
+                }
+                const button = document.createElement('button');
+                button.innerText = 'Modifica';
+                button.onclick =()=>{
+                    let div = document.getElementById('editcharacterformdiv');
+                    document.getElementById('characterid').value = array[i]._id
+                    document.getElementById("editcharactername").value = array[i].name;
+                    document.getElementById('editcharacterclass').value = array[i].class;
+                    document.getElementById("editcharacterstat1").value = statarray[0];
+                    document.getElementById("editcharacterstat2").value = statarray[1];
+                    document.getElementById("editcharacterstat3").value = statarray[2];
+                    document.getElementById("editcharacterstat4").value = statarray[3];
+                    console.log(document.getElementById('characterid').value);
+                    div.style.visibility = "visible";
+                }
+                cell1.appendChild(button)
+                row.appendChild(cell1);
+                table.appendChild(row);
+            }
+        });
 };
 function editcharacter() {
+    var id = document.getElementById('characterid').value;
     var name = document.getElementById("editcharactername").value;
     var classe = document.getElementById("editcharacterclass").value;
     var stat1 = document.getElementById("editcharacterstat1").value;
     var stat2 = document.getElementById("editcharacterstat2").value;
     var stat3 = document.getElementById("editcharacterstat3").value;
     var stat4 = document.getElementById("editcharacterstat4").value;
-    var inventory = document.getElementById("editcharacterinventory").value;
-    var stats=[];
-    stats.push(stat1,stat2,stat3,stat4);
-    fetch('http://localhost:8080/character'
-        , {
-            method: 'PUT'
-            ,
+    var stats=[{stat:"strength",value:stat1},{stat:"dexterity",value:stat2},{stat:"intelligence",value:stat3},{stat:"charisma",value:stat4}]
+    fetch('http://localhost:8080/character',
+        {
+            method: 'PUT',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name: name, class: classe, stats: stats,inventory: inventory}),
-        }).then((resp) => resp.json());
+            credentials:'include',
+            body: JSON.stringify({name: name, class: classe, stats: stats}),
+        })
+        .then((resp) =>
+        {
+            resp.json();
+            if(resp.status === 201)
+                alert('Character created');
+        });
 };
 
