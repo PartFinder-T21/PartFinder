@@ -117,7 +117,7 @@ function visualizzatuttigruppi() {
         });
 };
 function visualizzagruppi() {
-    fetch('http://localhost:8080/group/:user?='+Cookies.get('id'),{
+    fetch('http://localhost:8080/group/'+Cookies.get('id'),{
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
         credentials:'include',
