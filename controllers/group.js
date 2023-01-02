@@ -59,7 +59,7 @@ const getMyGroups=(req,res)=>{
     let userInfo = req.userInfo;
     let user = req.params.user;
     if(user === userInfo.id)
-        Group.find({$or:[{characters:{user:userInfo.id}},{master:userInfo.id}]}, (err, data) => {
+        Group.find({$or:[{characters:{$elemMatch:{user:user}}},{master:user}]}, (err, data) => {
             if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
             else return res.status(200).json({data: data, status: 200});
         })
@@ -69,6 +69,7 @@ const getMyGroups=(req,res)=>{
 const editGroup=(req,res)=>{
     let userInfo=req.userInfo;
     let id=req.body.id;
+    let name = req.body.name;
     let description=req.body.description;
     let size=req.body.size;
     let master=userInfo.id;
@@ -80,6 +81,7 @@ const editGroup=(req,res)=>{
         else if(data.master !== master) return res.status(403).json({message:'User is not master',status:403});
         else {
             Group.findByIdAndUpdate(id, {
+                name: name,
                 description: description,
                 size: size
             }, (err) => {

@@ -32,16 +32,36 @@ function register() {
     var password = document.getElementById("registerPassword").value;
     var password2 = document.getElementById("registerPassword2").value;
     let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{6,}$/;
+    let send = {
+        email:email,
+        username:username,
+        description:description,
+        password:password
+    }
     if(regex.test(password)&&password===password2) {
         fetch('http://localhost:8080/user/register'
             , {
                 method: 'POST'
                 ,
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: email, username: username, description: description, password: password}),
-            }).then((resp) => resp.json());
+                body: JSON.stringify(send),
+            })
+            .then((resp) => {
+                resp.json()
+                if(resp.status === 201)
+                    alert('utente registrato');
+                else if(resp.status === 400)
+                    alert('username o email non è univoco')
+            });
     }else {
         console.log("La password non soddisfa i criteri richiesti:\n" +
+            "al meno 6 caratteri\n" +
+            "al meno una lettera maiuscola\n" +
+            "al meno una lettera minuscola\n" +
+            "al meno un numero\n" +
+            "al meno un carattere speciale tra (@$!%*?&_)\n" +
+            "la password e la conferma password devono essere uguali\n");
+        alert("La password non soddisfa i criteri richiesti:\n" +
             "al meno 6 caratteri\n" +
             "al meno una lettera maiuscola\n" +
             "al meno una lettera minuscola\n" +
@@ -54,13 +74,29 @@ function register() {
 function edit() {
     var username = document.getElementById("editUsername").value;
     var description = document.getElementById("editDescription").value;
+    var id = Cookies.get('id');
+    let send={
+        id:id,
+        username:username,
+        description:description
+    }
     fetch('http://localhost:8080/user'
         , {
             method: 'PUT'
             ,
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username: username, description: description}),
-        }).then((resp) => resp.json());
+            headers: {'Content-Type': 'application/json','Access-Control-Allow-Credentials': 'true'},
+            credentials:'include',
+            body: JSON.stringify(send),
+        })
+        .then((resp) => {
+            resp.json()
+            if(resp.status === 200) {
+                alert('account modificato');
+                document.getElementById('loggedUser').innerHTML=Cookies.get('name')
+            }
+            else if(resp.status === 400)
+                alert('username non è univoco')
+        });
 };
 
 
@@ -68,7 +104,7 @@ function newgroup() {//TO FINISH------------------------------------------------
     var nome = document.getElementById("newgroupname").value;
     var description = document.getElementById("newgroupDescription").value;
     var size = document.getElementById("newgroupsize").value;
-    if(!isNaN(parseFloat(size)) && isFinite(size)) {
+    if(!isNaN(parseFloat(size)) && isFinite(size) && size<=5 && size >=1) {
         fetch('http://localhost:8080/group'
             , {
                 method: 'POST'
@@ -76,47 +112,170 @@ function newgroup() {//TO FINISH------------------------------------------------
                 headers: {'Content-Type': 'application/json'},
                 credentials:'include',
                 body: JSON.stringify({name: nome, description: description, size: size}),
-            }).then((resp) => resp.json());
+            })
+            .then((resp) => {
+                resp.json()
+                if(resp.status === 201)
+                    alert('gruppo creato');
+            });
     }else {
-        console.log("Size deve essere un numero");
+        console.log("Size deve essere un numero e deve rispettare i limiti");
+        alert("Size deve essere un numero e deve rispettare i limiti");
+
     }
 };
 
 
 function cercagruppo() {
     var code = document.getElementById("getgroupscode").value;
-    fetch('http://localhost:8080/group?='+code
-        , {
-            method: 'GET'
-            ,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { code: code} ),
-        }).then((resp) => resp.json());
-};
+    fetch('http://localhost:8080/group?code='+code,
+        {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+        })
+        .then((resp) => {
+            if (resp.status === 404)
+                alert('Group does not exist')
+            else {
+                resp.json()
+                    .then((data) => {
+                        const resultSet=data.data
+                        const table = document.getElementById('tabellaCerca');
+                        table.innerHTML = "";
+                        const row = document.createElement("tr");
+                        const cell1 = document.createElement("td");
+                        cell1.textContent = resultSet.name + "\n" + resultSet.code + "\n" + resultSet.description + "\n" + resultSet.size;
+                        if (Cookies.get('id') && resultSet.master !== Cookies.get('id')) {
+                            const button = document.createElement('button');
+                            const select = document.createElement('select');
+                            button.innerText = 'Join';
+                            fetch('http://localhost:8080/character',
+                                {
+                                    method: 'GET',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    credentials: 'include'
+                                })
+                                .then((resp) => resp.json())
+                                .then((data) => {
+                                    let characters = data.data;
+                                    for (let j = 0; j < characters.length; j++) {
+                                        const option = document.createElement('option');
+                                        option.innerText = characters[j].name + ": " + characters[j].class;
+                                        option.value = characters[j]._id;
+                                        select.appendChild(option);
+                                    }
+                                    cell1.appendChild(select);
+                                    button.onclick = () => {
+                                        requestJoin(resultSet._id, select.value);
+                                    }
+                                    cell1.appendChild(button);
+                                    row.appendChild(cell1);
+                                    table.appendChild(row);
+                                })
+                        } else {
+                            row.appendChild(cell1);
+                            table.appendChild(row);
+                        }
 
+                    })
+            }
+        })
+}
 
 function visualizzatuttigruppi() {
-
-    fetch('http://localhost:8080/group',{
-        method: 'GET'
-    })
+    fetch('http://localhost:8080/group',
+        {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'
+            },
+            credentials:'include'
+        })
         .then((resp) => resp.json())
         .then((data)=>{
-            const table = document.createElement("table");
-
-            const array=data.data;
+            console.log(data);
+            let array = [];
+            console.log(Cookies.get('id'))
+            if(Cookies.get('id')){
+                let resultSet = data.data;
+                for(let i=0;i<resultSet.length;i++){
+                    if(resultSet[i].master !== Cookies.get('id'))
+                        array.push(resultSet[i]);
+                }
+            }
+            else array = data.data;
+            const table = document.getElementById('tabellagrouppi');
+            table.innerHTML="";
             for (let i = 0; i < array.length; i++) {
                 const row = document.createElement("tr");
-                const cell1 = document.createElement("td");//code,master,name,description,size
-                cell1.textContent = "Codice: "+array[i].code+"\n Nome gruppo: "+array[i].name+"\n Descrizione: "
-                    +array[i].description+"\n Dimensione: "+array[i].size;
-                row.appendChild(cell1);
-                table.appendChild(row);
+                const cell1 = document.createElement("td");
+                cell1.textContent = array[i].name+"\n"+array[i].code+"\n"+array[i].description+"\n"+array[i].size;
+                if(Cookies.get('id')) {
+                    const button = document.createElement('button');
+                    const select = document.createElement('select');
+                    button.innerText = 'Join';
+                    fetch('http://localhost:8080/character',
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'include'
+                        })
+                        .then((resp) => resp.json())
+                        .then((data) => {
+                            let characters = data.data;
+                            for (let j = 0; j < characters.length; j++) {
+                                const option = document.createElement('option');
+                                option.innerText = characters[j].name + ": " + characters[j].class;
+                                option.value = characters[j]._id;
+                                select.appendChild(option);
+                            }
+                            cell1.appendChild(select);
+                            button.onclick = () => {
+                                requestJoin(array[i]._id, select.value);
+                            }
+                            cell1.appendChild(button);
+                            row.appendChild(cell1);
+                            table.appendChild(row);
+                        })
+                }
+                else {
+                    row.appendChild(cell1);
+                    table.appendChild(row);
+                }
+
             }
-            document.body.appendChild(table);
         });
 };
+function requestJoin(groupId,characterId){
+    let send={
+        character:characterId,
+        id:groupId
+    }
+    fetch('http://localhost:8080/group/request',
+        {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': 'true',
+            },
+            credentials:'include',
+            body: JSON.stringify(send)
+        })
+        .then((resp)=>{
+            if(resp.status === 201)
+                alert('richiesta inviata')
+            else{
+                resp.json()
+                    .then((data)=>{
+                        alert(JSON.stringify(data));
+                    })
+            }
+        })
+}
 function visualizzagruppi() {
+    let id = Cookies.get('id');
     fetch('http://localhost:8080/group/'+Cookies.get('id'),{
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
@@ -124,34 +283,204 @@ function visualizzagruppi() {
 
         })
         .then((resp) => resp.json())
-        .then((data)=>{
-            const table = document.createElement("table");
-            const array=data.data;
+        .then(async (data) => {
+            const tableMaster = document.getElementById("gruppimaster");
+            const tablePlayer = document.getElementById("gruppiplayer");
+            const div = document.getElementById('mieigruppi');
+            tableMaster.innerHTML = "";
+            tablePlayer.innerHTML = "";
+            const array = data.data;
             for (let i = 0; i < array.length; i++) {
                 const row = document.createElement("tr");
                 const cell1 = document.createElement("td");
-                cell1.textContent = "Codice: "+array[i].code+"\n Nome gruppo: "+array[i].name+"\n Descrizione: "
-                    +array[i].description+"\n Dimensione: "+array[i].size;
-                row.appendChild(cell1);
-                table.appendChild(row);
+                cell1.textContent = "Codice: " + array[i].code + "\n Nome gruppo: " + array[i].name + "\n Descrizione: "
+                    + array[i].description + "\n Dimensione: " + array[i].size;
+                if (array[i].master === id) {
+                    const button = document.createElement('button');
+                    const btnM = document.createElement('button');
+                    button.innerText = 'Modifica';
+                    button.onclick = () => {
+                        document.getElementById('editgroupid').value = array[i]._id;
+                        document.getElementById("editgroupsname").value = array[i].name;
+                        document.getElementById("editgroupsdescription").value = array[i].description;
+                        document.getElementById("editgroupssize").value = array[i].size;
+                        document.getElementById('editgroupdiv').style.visibility = 'visible';
+                    }
+                    cell1.appendChild(button);
+
+                    btnM.innerText = 'Elimina';
+                    btnM.onclick = async () => {
+                        const response = await fetch('http://localhost:8080/group', {
+                            method:'DELETE',
+                            headers: {'Content-Type': 'application/json'},
+                            credentials: 'include',
+                            body: JSON.stringify({id:array[i]._id})
+                        })
+                        if(response.status === 204)
+                            alert('gruppo eliminato');
+                    }
+                    cell1.appendChild(btnM);
+
+
+                    const players = array[i].characters;
+                    for(let j=0; j<players.length;j++){
+                        const el = document.createElement('li');
+                        const btnA = document.createElement('button');
+                        let user = await fetch('http://localhost:8080/user?id='+players[j].user,
+                            {method: 'GET',
+                                headers: {'Content-Type': 'application/json'},
+                                credentials:'include'});
+                        if(user.status === 404 || user.status === 500) break;
+                        user = await user.json();
+                        user = user.username;
+                        console.log(user);
+                        let character = await fetch('http://localhost:8080/character?id='+players[j].character,{
+                            method: 'GET',
+                            headers: {'Content-Type': 'application/json'},
+                            credentials:'include',
+                        });
+                        if(character.status === 404 || character.status === 500) break;
+                        character = await character.json();
+                        character = character.data.class;
+                        el.innerText = user+ ': '+character;
+                        btnA.innerText = 'Rimuovi';
+                        btnA.onclick=()=>{
+                            remove(array[i]._id,players[i]._id);
+                        }
+                        cell1.appendChild(el);
+                        cell1.appendChild(btnA);
+                    }
+
+                    const requests = array[i].requests;
+                    for (let j = 0; j < requests.length; j++) {
+                        const el = document.createElement('li');
+                        const btnA = document.createElement('button');
+                        const btnD = document.createElement('button');
+                        let user = await fetch('http://localhost:8080/user?id='+requests[j].user,
+                            {method: 'GET',
+                            headers: {'Content-Type': 'application/json'},
+                            credentials:'include'});
+                        if(user.status === 404) break;
+                        user = await user.json();
+                        user = user.username;
+                        console.log(user);
+                        let character = await fetch('http://localhost:8080/character?id='+requests[j].character,{
+                            method: 'GET',
+                            headers: {'Content-Type': 'application/json'},
+                            credentials:'include',
+                        });
+                        if(character.status === 404) break;
+                        character = await character.json();
+                        character = character.data.class;
+                        el.innerText = user+ ': '+character;
+                        btnA.innerText = 'Accetta';
+                        btnD.innerText = 'Rifiuta';
+                        btnA.onclick=()=>{
+                            accept(array[i]._id,requests[j].user,requests[j].character,requests[j]._id);
+                            visualizzagruppi();
+                        }
+                        btnD.onclick=()=>{
+                            decline(array[i]._id,requests[j]._id);
+                            visualizzagruppi();
+                        }
+                        cell1.appendChild(el);
+                        cell1.appendChild(btnA);
+                        cell1.appendChild(btnD);
+                    }
+
+                    row.appendChild(cell1);
+                    tableMaster.appendChild(row);
+                    console.log('preappend')
+
+                }
+                else {
+                    console.log('append');
+                    row.appendChild(cell1);
+                    tablePlayer.appendChild(row);
+                }
             }
-            document.body.appendChild(table);
+            div.style.visibility = 'visible';
         });
 };
-
-function editgruppi() {
+function accept(id,user,character,request){
+    let send={
+        id:id,
+        user:user,
+        character:character,
+        request:request
+    }
+    fetch('http://localhost:8080/group/accept',{
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(send)
+    })
+    .then((resp)=>{
+        if(resp.status === 200)
+            alert('aggiunto');
+    })
+}
+function decline(id,request){
+    let send={
+        id:id,
+        request:request
+    }
+    fetch('http://localhost:8080/group/decline',{
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(send)
+    })
+        .then((resp)=>{
+            if(resp.status === 200)
+                alert('rifiutato');
+        })
+}
+function remove(id,player){
+    let send={
+        id:id,
+        playerid:player
+    }
+    fetch('http://localhost:8080/group/remove',{
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(send)
+    })
+        .then((resp)=>{
+            if(resp.status === 200)
+                alert('giocatore rimosso');
+        })
+}
+function editgruppi(id) {
+    var id = document.getElementById('editgroupid').value;
+    var name = document.getElementById("editgroupsname").value;
     var description = document.getElementById("editgroupsdescription").value;
     var size = document.getElementById("editgroupssize").value;
-    if(!isNaN(parseFloat(size)) && isFinite(size)) {
+    let send = {
+        id:id,
+        name:name,
+        description:description,
+        size:size
+    };
+    if(!isNaN(parseFloat(size)) && isFinite(size) && size>=1 && size <= 5) {
         fetch('http://localhost:8080/group'
             , {
-                method: 'PUT'
-                ,
+                method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({description: description, size: size}),
-            }).then((resp) => resp.json());
+                credentials: 'include',
+                body: JSON.stringify(send),
+            })
+            .then((resp) => {
+                resp.json()
+                if(resp.status === 200){
+                    alert('Gruppo modificato');
+                    visualizzagruppi();
+                }
+            });
     }else {
-        console.log("Size deve essere un numero");
+        console.log("Size non valida");
+        alert("Size non valida");
     }
 };
 function newcharacter() {

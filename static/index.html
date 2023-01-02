@@ -34,9 +34,11 @@
 </form>
 <h2>Cerca gruppo</h2>
 <form action="../controllers/group.js" method="post" name="getgroupsform" id="getgroupsform">
-    <input name="codice" value="AAAAAA" id="getgroupscode"/><br>
+    <input name="codice" placeholder="XXXXX" id="getgroupscode"/><br>
     <button type="button" onclick="cercagruppo()">Cerca</button>
 </form>
+<table id="tabellaCerca"></table>
+
 
 <h2>Tutti i gruppi</h2>
 <button type="button" onclick="visualizzatuttigruppi()">mostra</button>
@@ -44,13 +46,24 @@
 
 <h2>I tuoi gruppi</h2>
 <button type="button" onclick="visualizzagruppi()">mostra</button>
+<div style="visibility: hidden" id="mieigruppi">
+    <h1>Gruppi master</h1>
+    <table id="gruppimaster"></table>
+    <h1>Gruppi giocatore</h1>
+    <table id="gruppiplayer"></table>
+</div>
+
 
 <h2>Modifica gruppo</h2>
-<form action="../controllers/group.js" method="post" name="editgroupsform" id="editgroupsform">
-    <input name="description" value="Pathfinder 2" id="editgroupsdescription"/><br>
-    <input name="size" value="7" id="editgroupssize"/><br>
-    <button type="button" onclick="editgruppi()">Cerca</button>
-</form>
+<div id="editgroupdiv" style="visibility: hidden">
+    <form action="../controllers/group.js" method="post" name="editgroupsform" id="editgroupsform">
+        <input type="hidden" id="editgroupid"/>
+        <input name="name" value="" id="editgroupsname"/><br>
+        <input name="description" value="" id="editgroupsdescription"/><br>
+        <input name="size" value="" id="editgroupssize"/><br>
+        <button type="button" onclick="editgruppi()">Modifica</button>
+    </form>
+</div>
 
 <hr>
 <h2>Crea personaggio</h2>
