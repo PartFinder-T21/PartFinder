@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const User = require("../models/user");
-const path = require("path");
-const dotenv=require('dotenv').config({path: path.resolve(__dirname+'/misc','.env')});
+const User = require("../models/user")
+const dotenv = require('dotenv').config({path: '/home/sheppi/Scrivania/PartFinder/PartFinder/misc/.env'});
 const newUser = async(req,res) => {
     let hashedPassword = bcrypt.hashSync(req.body.password,bcrypt.genSaltSync(10));
     const newUser=new User({
@@ -163,4 +162,21 @@ const downVote=(req,res)=>{
     }
     else return res.status(400).json({message:'Bad request',status:400});
 }
-module.exports = {newUser,login,getUser,editUser,upVote,downVote};
+const deleteUser=(req,res)=>{
+    let id=req.body.id;
+    let userInfo = req.userInfo;
+    let myId=userInfo.id;
+    if(id === myId){
+        User.findByIdAndDelete(myId
+        ,(err)=>{
+            if(err){
+                return res.status(500).json({Error:err,status:500});
+            }
+            else{
+                return res.status(200).json({message:'User deleted',status:200});
+            }
+        })
+    }
+    else return res.status(403).json({message:'User id does not match',status:403});
+}
+module.exports = {newUser,login,getUser,editUser,upVote,downVote,deleteUser};
