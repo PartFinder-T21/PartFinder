@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const User = require("../models/user")
-const dotenv = require('dotenv').config({path: '/home/sheppi/Scrivania/PartFinder/PartFinder/misc/.env'});
+const User = require("../models/user");
+const path = require("path");
+const dotenv=require('dotenv').config({path: path.resolve(__dirname+'/misc','.env')});
 const newUser = async(req,res) => {
     let hashedPassword = bcrypt.hashSync(req.body.password,bcrypt.genSaltSync(10));
     const newUser=new User({

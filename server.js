@@ -1,4 +1,5 @@
-const dotenv=require('dotenv').config({path: '/home/sheppi/Scrivania/PartFinder/PartFinder/misc/.env'});
+const path = require("path");
+const dotenv=require('dotenv').config({path: path.resolve(__dirname+'/misc','.env')});
 const express=require('express');
 const app=express();
 const mongoose=require('mongoose')
