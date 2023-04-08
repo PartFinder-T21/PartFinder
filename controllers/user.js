@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../models/user")
-const dotenv = require('dotenv').config({path: '/home/sheppi/Scrivania/PartFinder/PartFinder/misc/.env'});
+const mongoose = require("mongoose");
+const { ObjectId } = require('mongodb');
 const newUser = async(req,res) => {
     let hashedPassword = bcrypt.hashSync(req.body.password,bcrypt.genSaltSync(10));
     const newUser=new User({
@@ -80,7 +81,7 @@ const getUser=(req,res)=>{
         })
     else
         User.findById(id,'username image description reputation',(err,data)=>{
-            if(err) return res.status(500).json({message:'Unexpected error',status:500});
+            if(err) return res.status(500).json({message:err,status:500});
             else if(!data) return res.status(404).json({message:'User does not exist',status:404});
             else return res.status(200).json(data);
         })
