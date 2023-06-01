@@ -28,10 +28,10 @@
       <h2>Nuovo personaggio</h2>
       <input type="text" v-model="newCharacterData.name" placeholder="Nome">
       <input type="text" v-model="newCharacterData.classe" placeholder="Classe">
-      <input type="number" v-model="newCharacterData.stats.str.value" placeholder="Forza">
-      <input type="number" v-model="newCharacterData.stats.dex.value" placeholder="Destrezza">
-      <input type="number" v-model="newCharacterData.stats.int.value" placeholder="Intelligenza">
-      <input type="number" v-model="newCharacterData.stats.cha.value" placeholder="Carisma">
+      <input type="number" v-model="newCharacterData.stats[0].value" placeholder="Forza">
+      <input type="number" v-model="newCharacterData.stats[1].value" placeholder="Destrezza">
+      <input type="number" v-model="newCharacterData.stats[2].value" placeholder="Intelligenza">
+      <input type="number" v-model="newCharacterData.stats[3].value" placeholder="Carisma">
       <button @click="createCharacter">Crea personaggio</button>
       <button @click="createCClientSide">Crea Client Side</button>
 
@@ -98,12 +98,12 @@ export default {
       newCharacterData: {
         name: '',
         classe: '',
-        stats:{
-          str: {name:"str", value:''},
-          dex: {name:"dex", value:''},
-          int: {name:"int", value:''},
-          cha: {name:"cha", value:''},
-        }
+        stats:[
+          {stat:"strength", value:''},
+          {stat:"dexterity", value:''},
+          {stat:"intelligence", value:''},
+          {stat:"charisma", value:''},
+        ]
       },
       gruppiTutti: [],
       gruppi: [],
@@ -135,7 +135,7 @@ export default {
         input:this.loginData.input,
         password:this.loginData.password
     }
-    fetch('http://localhost:8080/user/login',
+    fetch('/api/user/login',
         {
             method: 'POST',
             headers: {
@@ -154,7 +154,7 @@ export default {
         })
     },
     register() {
-      axios.post('http://localhost:8080/user/register', this.registerData)
+      axios.post('/api/user/register', this.registerData)
         .then(response => {
           // Registrazione success
           // Puoi effettuare il login automaticamente o mostrare un messaggio di successo
@@ -178,12 +178,12 @@ export default {
       // Cancella il token o i cookie se necessario
     },
     createCharacter() {
-      fetch('http://localhost:8080/character',
+      fetch('/api/character',
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 credentials:'include',
-                body: JSON.stringify({name: JSON.parse(JSON.stringify(this.newCharacterData.name)), class: JSON.parse(JSON.stringify(this.newCharacterData.classe)), stats: JSON.parse(JSON.stringify(this.newCharacterData.stats))}),
+                body: JSON.stringify({name: JSON.parse(JSON.stringify(this.newCharacterData.name)), class: JSON.parse(JSON.stringify(this.newCharacterData.classe)), stats: this.newCharacterData.stats}),
             })
             .then((resp) =>
             {
@@ -197,7 +197,7 @@ export default {
       console.log(this.characters[0].name)
     },
     searchGroup() {
-    fetch('http://localhost:8080/group?code='+this.searchGroupQuery,
+    fetch('/api/group?code='+this.searchGroupQuery,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -216,7 +216,7 @@ export default {
                         wasAGroupSearched = true
                         if (Cookies.get('id') && resultSet.master !== Cookies.get('id')) {
                             select: this.selected
-                            fetch('http://localhost:8080/character',
+                            fetch('/api/character',
                                 {
                                     method: 'GET',
                                     headers: {
@@ -245,7 +245,7 @@ export default {
     description = JSON.parse(JSON.stringify(this.newGroupData.description));
     size = JSON.parse(JSON.stringify(this.newGroupData.size));
     if(!isNaN(parseFloat(size)) && isFinite(size) && size<=5 && size >=1) {
-        fetch('http://localhost:8080/group'
+        fetch('/api/group/'
             , {
                 method: 'POST'
                 ,
@@ -272,7 +272,7 @@ export default {
     },
     loadCharacters() {
       // Carica i personaggi dell'utente dal server
-      axios.get('http://localhost:8080/character')
+      axios.get('/api/character')
         .then(response => {
           this.characters = response.data;
         })
@@ -282,7 +282,7 @@ export default {
     },
     loadGroups() {
       // Carica i gruppi dell'utente dal server
-      axios.get('http://localhost:8080/group')
+      axios.get('/api/group')
         .then(response => {
           this.gruppi = response.data;
         })
