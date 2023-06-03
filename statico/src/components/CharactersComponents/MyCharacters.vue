@@ -7,6 +7,7 @@
     },
     methods: {
         visualizzaPgs(){
+            this.personaggi=[];
             fetch('/api/character',
         {
             method: 'GET',
@@ -20,6 +21,20 @@
                     this.personaggi.push(data.data[i])
             }
         })
+        },
+
+        cancellaPg(_id){
+            fetch('/api/character',
+        {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'
+            },
+            credentials:'include',
+            body: JSON.stringify({id: _id})
+        })
+        .then((resp) => 
+            resp.json(),
+            this.visualizzaPgs())
         }
     },
     mounted(){
@@ -47,6 +62,7 @@
           <th>Destrezza</th>
           <th>Intelligenza</th>
           <th>Carisma</th>
+          <th>Cancella</th>
         </tr>
       </thead>
       <tbody>
@@ -57,6 +73,7 @@
           <td>{{ item.stats[1].value }}</td>
           <td>{{ item.stats[2].value }}</td>
           <td>{{ item.stats[3].value }}</td>
+          <button @click="cancellaPg(item._id)" class="delete"> X </button>
         </tr>
       </tbody>
     </table>
@@ -66,6 +83,15 @@
 </template>
 
 <style>
+    .delete {
+        background-color: transparent;
+        width: 100%;
+        height: 100%;
+        border-bottom: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        border-radius: 0px;
+    }
+
  /* Stile per la tabella */
  table {
     width: 100%;
