@@ -3,21 +3,17 @@
 
 <template>
     <main>
-        <h1 classe="title">Home</h1>
-        <div classe="testo">Software Engineering - University of Trento, 2022/2023</div>
+
     </main>
 </template>
 
 <style>
 #app {
-    max-width: 1280px;
+    max-width: 500px;
     margin: 0 auto;
     padding: 2rem;
   
     font-weight: normal;
-  }
-  body{
-    font-family: 'Montserrat', sans-serif;
   }
   
   header {

@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <main>
+  <main>
         <div class="wrapper">
             <nav>    
 
@@ -14,7 +14,7 @@
 
             </nav>  
         </div>
-    </main>
+  </main>
 </template>
 
 <style>
@@ -25,16 +25,25 @@
   
     font-weight: normal;
   }
+  body{
+    font-family: 'Montserrat', sans-serif;
+  }
   
   header {
     line-height: 1.5;
     max-height: 100vh;
   }
   
-  .logo {
-    display: block;
-    margin: 0 auto 2rem;
-  }
+  .title {
+  text-align: center;
+  color: #66ff66;
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.testo{
+  text-align: center; 
+}
   
   a,
   .green {
