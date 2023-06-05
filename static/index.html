@@ -1,100 +1,13 @@
-<h1>PartFinder</h1>
-<hr>
-<span>Logged User:</span><span id="loggedUser"></span><br>
-<h2>Login</h2>
-<form action="../controllers/user.js" method="post" name="loginform" id="loginform">
-    <input name="email" value="master" id="loginEmail"/><br>
-    <input name="password" value="bacon" id="loginPassword"/><br>
-    <button type="button" onclick="login()">LogIn</button>
-</form>
-
-<h2>Registrazione</h2>
-<form action="../controllers/user.js" method="post" name="registerform" id="registerform">
-    <input name="email" value="mario.rossi@unitn.com" id="registerEmail"/><br>
-    <input name="username" value="mario" id="registerUsername"/><br>
-    <input name="description" value="DM" id="registerDescription"/><br>
-    <input name="password" value="123" id="registerPassword"/><br>
-    <input name="password2" value="123" id="registerPassword2"/><br>
-    <button type="button" onclick="register()">Register</button>
-</form>
-<h2>Modifica utente</h2>
-<form action="../controllers/user.js" method="post" name="editform" id="editform">
-    <input name="username" value="mario" id="editUsername"/><br>
-    <input name="description" value="DM" id="editDescription"/><br>
-    <button type="button" onclick="edit()">Modifica</button>
-</form>
-
-<hr>
-<h2>Crea gruppo</h2>
-<form action="../controllers/group.js" method="post" name="newgroupform" id="newgroupform">
-    <input name="name" value="gruppo1" id="newgroupname"/><br>
-    <input name="description" value="pathfinder" id="newgroupDescription"/><br>
-    <input name="size" value="4" id="newgroupsize"/><br>
-    <button type="button" onclick="newgroup()">Crea</button>
-</form>
-<h2>Cerca gruppo</h2>
-<form action="../controllers/group.js" method="post" name="getgroupsform" id="getgroupsform">
-    <input name="codice" placeholder="XXXXX" id="getgroupscode"/><br>
-    <button type="button" onclick="cercagruppo()">Cerca</button>
-</form>
-<table id="tabellaCerca"></table>
-
-
-<h2>Tutti i gruppi</h2>
-<button type="button" onclick="visualizzatuttigruppi()">mostra</button>
-<table id="tabellagrouppi"></table>
-
-<h2>I tuoi gruppi</h2>
-<button type="button" onclick="visualizzagruppi()">mostra</button>
-<div style="visibility: hidden" id="mieigruppi">
-    <h1>Gruppi master</h1>
-    <table id="gruppimaster"></table>
-    <h1>Gruppi giocatore</h1>
-    <table id="gruppiplayer"></table>
-</div>
-
-
-<h2>Modifica gruppo</h2>
-<div id="editgroupdiv" style="visibility: hidden">
-    <form action="../controllers/group.js" method="post" name="editgroupsform" id="editgroupsform">
-        <input type="hidden" id="editgroupid"/>
-        <input name="name" value="" id="editgroupsname"/><br>
-        <input name="description" value="" id="editgroupsdescription"/><br>
-        <input name="size" value="" id="editgroupssize"/><br>
-        <button type="button" onclick="editgruppi()">Modifica</button>
-    </form>
-</div>
-
-<hr>
-<h2>Crea personaggio</h2>
-<form action="../controllers/character.js" method="post" name="newcharacterform" id="newcharacterform">
-    <input name="name" value="Nome1" id="newcharactername"/><br>
-    <input name="class" value="guerriero" id="newcharacterclass"/><br>
-    <input name="stat1" value="16" id="newcharacterstat1"/><br>
-    <input name="stat2" value="14" id="newcharacterstat2"/><br>
-    <input name="stat3" value="18" id="newcharacterstat3"/><br>
-    <input name="stat4" value="10" id="newcharacterstat4"/><br>
-    <button type="button" onclick="newcharacter()">Crea</button>
-</form>
-
-<h2>I miei personaggi</h2>
-<button type="button" onclick="visualizzapersonaggi()">mostra</button>
-<table id="tabellapersonaggi"></table>
-
-<div style="visibility: hidden" id="editcharacterformdiv">
-    <h2>Modifica personaggio</h2>
-    <form action="../controllers/character.js" method="post" name="editcharacterform" id="editcharacterform">
-        <input name="id" type="hidden" id="characterid">
-        <input name="name" value="Nome1" id="editcharactername"/><br>
-        <input name="class" value="guerriero" id="editcharacterclass"/><br>
-        strength<input name="stat1" value="16" id="editcharacterstat1"/><br>
-        dexterity<input name="stat2" value="14" id="editcharacterstat2"/><br>
-        intelligence<input name="stat3" value="18" id="editcharacterstat3"/><br>
-        charisma<input name="stat4" value="10" id="editcharacterstat4"/><br>
-        <div id="editcharacterinventory"></div>>
-        <button type="button" onclick="editcharacter()">Modifica</button>
-    </form>
-</div>
-<script src="https://code.jquery.com/jquery-3.6.3.slim.min.js" integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo=" crossorigin="anonymous"></script>
-<script src="js.cookie.js"></script>
-<script src="script.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

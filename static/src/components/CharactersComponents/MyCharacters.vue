@@ -8,7 +8,7 @@
     methods: {
         visualizzaPgs(){
             this.personaggi=[];
-            fetch('http://localhost:8080/character',
+            fetch('/api/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -25,7 +25,7 @@
 
         cancellaPg(_id){
           if(confirm("Sei sicuro di voler cancellare il personaggio? La scelta è irreversibile!"))
-            {fetch('http://localhost:8080/character',
+            {fetch('/api/character',
         {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'

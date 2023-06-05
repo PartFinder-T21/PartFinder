@@ -4,16 +4,17 @@
     export default {
     data() {
       return {
-        gruppi: [],
-        personaggi: [],
-        selected: '',
+        gruppiMaster: [],
+        gruppiPlayer: [],
         tmp: ''
       }
     },
     methods: {
-      caricaPgs(){
-            this.personaggi=[];
-            fetch('http://localhost:8080/character',
+        visualizzaGruppi(){
+            this.gruppiMaster=[];
+            this.gruppiPlayer=[];
+            
+            fetch('/api/group/'+Cookies.get('id'),
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -23,68 +24,90 @@
         .then((resp) => resp.json())
         .then((data)=>{
             for(let i=0; i<data.data.length; i++){
-                    this.personaggi.push(data.data[i])
+                    if(Cookies.get('id') === data.data[i].master)
+                      {this.gruppiMaster.push(data.data[i]);}
+                    else
+                    {this.gruppiPlayer.push(data.data[i])
+                      this.find(this.gruppiPlayer[i].master)
+                      this.gruppiPlayer[i].master = this.tmp
+                      this.gruppiPlayer[i].characters.forEach(item => {
+                        this.find(item)
+                      item = this.tmp
+                      })}
             }
         })
+        },
 
-            this.gruppi=[];
-        fetch('http://localhost:8080/group',
+        cancellaGruppo(_id){
+          if(confirm("Sei sicuro di voler cancellare il gruppo? La scelta è irreversibile!"))
+            {fetch('/api/group',
+        {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'
+            },
+            credentials:'include',
+            body: JSON.stringify({id: _id})
+        })
+        .then((resp) => {
+          if(resp.status === 204){
+            resp.json(),
+            this.visualizzaGruppi()}
+          else{
+            alert('ERROR, il gruppo non è stato cancellato')
+          }})}
+        },
+
+        find(user_id){
+          fetch('/api/user?id='+user_id,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
             },
-            credentials:'include'
-        })
-        .then((resp) => resp.json())
-        .then((data)=>{
-          for(let i=0; i<data.data.length; i++){
-            this.gruppi.push(data.data[i]);
-          }
-        })
-      },
-
-      inviaRichiesta(id){
-        let send={
-        character:this.selected,
-        id:id
-    }
-    fetch('http://localhost:8080/group/request',
-        {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': 'true',
-            },
             credentials:'include',
-            body: JSON.stringify(send)
         })
-        .then((resp)=>{
-            if(resp.status === 201)
-                alert('richiesta inviata')
-            else{
-                resp.json()
-                    .then((data)=>{
-                        alert(JSON.stringify(data));
-                    })
-            }
+        .then((resp) => {
+          if(resp.status === 200 ){
+            resp.json()
+            .then((data)=> {this.tmp = data.username})}
         })
-      },
+        },
 
-      control(master, array){
-        let a=true
-          array.forEach(element => {
-            if(Cookies.get('id') === element.user){
-              a=false;
-            }
-          });
-        return((Cookies.get('id') != master) && a)
-      }
+        controlla(obj){
+          return (typeof obj !== 'undefined')
+        },
+
+        richiesta(i,j){
+          if(confirm("Vuoi accettare il seguente player nel gruppo? Utente: "+this.find(this.gruppiMaster[i].requests[j].user))){
+            fetch('/api/group/accept',{
+              method: 'PUT',
+              headers: {'Content-Type': 'application/json'},
+              credentials: 'include',
+              body: JSON.stringify({id: this.gruppiMaster[i]._id, user: this.gruppiMaster[i].requests[j].user, character: this.gruppiMaster[i].requests[j].character, request: this.gruppiMaster[i].requests[j]._id})
+            })
+              .then((resp)=>{
+                if(resp.status === 200)
+                  alert('aggiunto');
+              })
+          }
+          else{
+            fetch('/api/group/decline',{
+              method: 'PUT',
+              headers: {'Content-Type': 'application/json'},
+              credentials: 'include',
+              body: JSON.stringify({id: this.gruppiMaster[i]._id, request: this.gruppiMaster[i].requests[j]._id})
+            })
+              .then((resp)=>{
+                if(resp.status === 200)
+                  alert('rifiutato');
+              })
+          }
+        }
+
     },
-    
     mounted(){
-        this.caricaPgs();
+        this.visualizzaGruppi();
     }
   }
-
 </script>
 
 <template>
@@ -94,13 +117,12 @@
 
                 <RouterLink to="/gruppi/crea">Crea</RouterLink>
                 <RouterLink to="/gruppi/cerca">Cerca</RouterLink>
-                <RouterLink to="/gruppi/mostraTutti" @click="caricaPgs">Mostra Tutti</RouterLink>
-                <RouterLink to="/gruppi/mostraMiei">Gruppi Personali</RouterLink>
+                <RouterLink to="/gruppi/mostraTutti">Mostra Tutti</RouterLink>
+                <RouterLink to="/gruppi/mostraMiei" @click="visualizzaGruppi">Gruppi Personali</RouterLink>
 
             </nav>  
         </div>
-
-
+        <div class="sottotitolo">GRUPPI COME MASTER (premere su mostra gruppi per mostrare i nomi)</div>
         <table>
           <thead>
             <tr>
@@ -113,32 +135,47 @@
               <th>Player3</th>
               <th>Player4</th>
               <th>Player5</th>
-              <th>Richiesta</th>
+              <th>Cancella</th>
            </tr>
           </thead>
         <tbody>
-          <tr v-for="item in gruppi" :key="item._id">
+          <tr v-for="item in gruppiMaster" :key="item._id">
             <td>{{ item.name }}</td>
             <td>{{ item.description }}</td>
             <td>{{ item.code }}</td>
             <td>{{ item.master }}</td>
-            <td v-for="player in item.characters"> {{ player.user }} </td>
-            <td v-for="request in item.requests">Prenotato</td>
+            <td v-for="player in item.characters"> {{player.user}} </td>
+            <td v-for="request in item.requests"><Button class="Delete" @click="richiesta(gruppiMaster.indexOf(item), item.request.indexOf(request))">Richiesta</Button></td>
             <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
-            <template v-if="(5 - (item.characters.length + item.requests.length))!=0 && control(item.master, item.requests) ">
-              <button @click="inviaRichiesta(item._id)" class="delete"> INVIA RICHIESTA </button>
-              <select v-model="selected">
-                <option disabled value="">Seleziona personaggio per richiesta</option>
-                <option v-for="option in personaggi" :value="option._id">{{ option.name }}</option>
-              </select>
-            </template>
-            <template v-else>
-              <td>RICHIESTA NON DISPONIBILE</td>
-            </template>
+            <button @click="cancellaGruppo(item._id)" class="delete"> X </button>
           </tr>
         </tbody>
         </table>
 
+    <div class="sottotitolo">GRUPPI COME PLAYER (premere su mostra gruppi per mostrare i nomi)</div>
+        <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Descrizione</th>
+          <th>Master</th>
+          <th>Player1</th>
+          <th>Player2</th>
+          <th>Player3</th>
+          <th>Player4</th>
+          <th>Player5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in gruppiPlayer" :key="item._id">
+          <td>{{ item.name }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.master }}</td>
+          <td v-for="player in item.characters"> {{player}} </td>
+          <td v-for="request in item.requests"><Button class="Delete" @click="richiesta">Richiesta</Button></td>
+        </tr>
+      </tbody>
+    </table>
   </main>
 </template>
 
@@ -151,7 +188,7 @@
  .delete {
         background-color: transparent;
         width: 100%;
-        height: 100%;
+        width: 100%;
         border-bottom: 1px solid #ddd;
         border-right: 1px solid #ddd;
         border-radius: 0px;

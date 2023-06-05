@@ -27,7 +27,7 @@ export default{
                 input: this.loginData.loginMail,
                 password: this.loginData.loginPass
             };
-            fetch("http://localhost:8080/user/login", {
+            fetch("/api/user/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export default{
                 password: password
             };
             if (regex.test(password) && password === password2) {
-                fetch("http://localhost:8080/user/register", {
+                fetch("/api/user/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(send),

@@ -14,7 +14,7 @@
     methods: {
       caricaPgs(){
             this.personaggi=[];
-            fetch('http://localhost:8080/character',
+            fetch('/api/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -30,7 +30,7 @@
       },
       cercaGruppo(){
             this.gruppi=[];
-            fetch('http://localhost:8080/group?code='+this.codice,
+            fetch('/api/group?code='+this.codice,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -50,7 +50,7 @@
         character:this.selected,
         id:id
     }
-    fetch('http://localhost:8080/group/request',
+    fetch('/api/group/request',
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',
