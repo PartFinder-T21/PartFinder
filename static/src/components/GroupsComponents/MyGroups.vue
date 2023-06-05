@@ -14,7 +14,7 @@
             this.gruppiMaster=[];
             this.gruppiPlayer=[];
             
-            fetch('/api/group/'+Cookies.get('id'),
+            fetch('http://localhost:8080/group/'+Cookies.get('id'),
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -27,20 +27,14 @@
                     if(Cookies.get('id') === data.data[i].master)
                       {this.gruppiMaster.push(data.data[i]);}
                     else
-                    {this.gruppiPlayer.push(data.data[i])
-                      this.find(this.gruppiPlayer[i].master)
-                      this.gruppiPlayer[i].master = this.tmp
-                      this.gruppiPlayer[i].characters.forEach(item => {
-                        this.find(item)
-                      item = this.tmp
-                      })}
+                    {this.gruppiPlayer.push(data.data[i])}
             }
         })
         },
 
         cancellaGruppo(_id){
           if(confirm("Sei sicuro di voler cancellare il gruppo? La scelta è irreversibile!"))
-            {fetch('/api/group',
+            {fetch('http://localhost:8080/group',
         {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'
@@ -58,7 +52,7 @@
         },
 
         find(user_id){
-          fetch('/api/user?id='+user_id,
+          fetch('http://localhost:8080/user?id='+user_id,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -78,7 +72,7 @@
 
         richiesta(i,j){
           if(confirm("Vuoi accettare il seguente player nel gruppo? Utente: "+this.find(this.gruppiMaster[i].requests[j].user))){
-            fetch('/api/group/accept',{
+            fetch('http://localhost:8080/group/accept',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
@@ -90,7 +84,7 @@
               })
           }
           else{
-            fetch('/api/group/decline',{
+            fetch('http://localhost:8080/group/decline',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
@@ -101,6 +95,24 @@
                   alert('rifiutato');
               })
           }
+          this.visualizzaGruppi();
+        },
+
+        removePlayer(group, player){
+          if(confirm("Vuoi davvero rimuovere il giocatore " + player + " dal gruppo " + group.name + "?")){
+
+          fetch('http://localhost:8080/group/remove',{
+              method: 'PUT',
+              headers: {'Content-Type': 'application/json'},
+              credentials: 'include',
+              body: JSON.stringify({id: group, playerid: player})
+          })
+              .then((resp)=>{
+                  if(resp.status === 200)
+                      alert('giocatore rimosso');
+              })
+          }
+          this.visualizzaGruppi();
         }
 
     },
@@ -144,8 +156,8 @@
             <td>{{ item.description }}</td>
             <td>{{ item.code }}</td>
             <td>{{ item.master }}</td>
-            <td v-for="player in item.characters"> {{player.user}} </td>
-            <td v-for="request in item.requests"><Button class="Delete" @click="richiesta(gruppiMaster.indexOf(item), item.request.indexOf(request))">Richiesta</Button></td>
+            <td v-for="player in item.characters" @click="removePlayer(item._id, player._id)"> {{player.user}} </td>
+            <td v-for="request in item.requests"><Button class="cancella" @click="richiesta(gruppiMaster.indexOf(item), item.requests.indexOf(request))">Richiesta</Button></td>
             <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
             <button @click="cancellaGruppo(item._id)" class="delete"> X </button>
           </tr>
@@ -158,6 +170,7 @@
         <tr>
           <th>Nome</th>
           <th>Descrizione</th>
+          <th>Codice</th>
           <th>Master</th>
           <th>Player1</th>
           <th>Player2</th>
@@ -170,9 +183,11 @@
         <tr v-for="item in gruppiPlayer" :key="item._id">
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
+          <td>{{ item.code }}</td>
           <td>{{ item.master }}</td>
-          <td v-for="player in item.characters"> {{player}} </td>
-          <td v-for="request in item.requests"><Button class="Delete" @click="richiesta">Richiesta</Button></td>
+          <td v-for="player in item.characters"> {{player.user}} </td>
+          <td v-for="request in item.requests">Richiesta</td>
+          <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
         </tr>
       </tbody>
     </table>
@@ -180,6 +195,12 @@
 </template>
 
 <style>
+  .cancella{
+        width: 100%;
+        width: 100%;
+        border-radius: 0px;
+        background-color: transparent;
+  }
  .sottotitolo {
         margin-bottom: 20px;
         margin-top: 40px ;

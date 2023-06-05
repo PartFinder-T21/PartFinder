@@ -13,7 +13,7 @@
     methods: {
       caricaPgs(){
             this.personaggi=[];
-            fetch('/api/character',
+            fetch('http://localhost:8080/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -28,7 +28,7 @@
         })
 
             this.gruppi=[];
-        fetch('/api/group',
+        fetch('http://localhost:8080/group',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -48,7 +48,7 @@
         character:this.selected,
         id:id
     }
-    fetch('/api/group/request',
+    fetch('http://localhost:8080/group/request',
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',
@@ -69,9 +69,13 @@
         })
       },
 
-      control(master, array){
+      control(master, req, cha){
         let a=true
-          array.forEach(element => {
+          cha.forEach(element => {
+            if(Cookies.get('id') === element.user){
+              a=false;
+            }});
+          req.forEach(element => {
             if(Cookies.get('id') === element.user){
               a=false;
             }
@@ -125,7 +129,7 @@
             <td v-for="player in item.characters"> {{ player.user }} </td>
             <td v-for="request in item.requests">Prenotato</td>
             <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
-            <template v-if="(5 - (item.characters.length + item.requests.length))!=0 && control(item.master, item.requests) ">
+            <template v-if="(5 - (item.characters.length + item.requests.length))!=0 && control(item.master, item.requests, item.characters) ">
               <button @click="inviaRichiesta(item._id)" class="delete"> INVIA RICHIESTA </button>
               <select v-model="selected">
                 <option disabled value="">Seleziona personaggio per richiesta</option>
