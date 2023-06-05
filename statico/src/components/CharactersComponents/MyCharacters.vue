@@ -8,7 +8,7 @@
     methods: {
         visualizzaPgs(){
             this.personaggi=[];
-            fetch('/api/character',
+            fetch('http://localhost:8080/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -24,7 +24,8 @@
         },
 
         cancellaPg(_id){
-            fetch('/api/character',
+          if(confirm("Sei sicuro di voler cancellare il personaggio? La scelta è irreversibile!"))
+            {fetch('http://localhost:8080/character',
         {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'
@@ -32,9 +33,13 @@
             credentials:'include',
             body: JSON.stringify({id: _id})
         })
-        .then((resp) => 
+        .then((resp) => {
+            if(resp.status===204){
             resp.json(),
-            this.visualizzaPgs())
+            this.visualizzaPgs()}
+            else{
+              alert('ERROR, il personaggio non è stato cancellato')
+            }})}
         }
     },
     mounted(){

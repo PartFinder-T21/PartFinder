@@ -16,7 +16,7 @@
     },
     methods: {
       createCharacter() {
-      fetch('/api/character',
+      fetch('http://localhost:8080/character',
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -28,6 +28,8 @@
                 resp.json();
                 if(resp.status === 201)
                     alert('Character created');
+                else
+                    alert('ERROR, character not created')
             });
     }
     }

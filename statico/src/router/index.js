@@ -51,11 +51,6 @@ const router = createRouter({
         component: () => import('../components/GroupsComponents/FindGroup.vue')
     },
     {
-        path: '/gruppi/modifica',
-        name: 'gruppiModifica',
-        component: () => import('../components/GroupsComponents/ModifyGroup.vue')
-    },
-    {
         path: '/gruppi/mostraTutti',
         name: 'gruppiMostraTutti',
         component: () => import('../components/GroupsComponents/ShowAllGroups.vue')

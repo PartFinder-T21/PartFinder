@@ -8,7 +8,6 @@
 
                 <RouterLink to="/gruppi/crea">Crea</RouterLink>
                 <RouterLink to="/gruppi/cerca">Cerca</RouterLink>
-                <RouterLink to="/gruppi/modifica">Modifica</RouterLink>
                 <RouterLink to="/gruppi/mostraTutti">Mostra Tutti</RouterLink>
                 <RouterLink to="/gruppi/mostraMiei">Gruppi Personali</RouterLink>
 
@@ -24,9 +23,6 @@
     padding: 2rem;
   
     font-weight: normal;
-  }
-  body{
-    font-family: 'Montserrat', sans-serif;
   }
   
   header {
@@ -59,7 +55,7 @@
   }
   
   nav {
-    width: 100%;
+    width: 150%;
     font-size: 12px;
     text-align: center;
     margin-top: 2rem;
