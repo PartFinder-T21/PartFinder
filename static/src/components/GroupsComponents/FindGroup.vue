@@ -5,6 +5,8 @@
     data() {
       return {
         gruppi: [],
+        gruppiMaster: [],
+        gruppiPlayer: [],
         personaggi: [],
         codice: '',
         selected: '',
@@ -14,7 +16,7 @@
     methods: {
       caricaPgs(){
             this.personaggi=[];
-            fetch('http://localhost:8080/character',
+            fetch('/api/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -30,7 +32,7 @@
       },
       cercaGruppo(){
             this.gruppi=[];
-            fetch('http://localhost:8080/group?code='+this.codice,
+            fetch('/api/group?code='+this.codice,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -45,12 +47,56 @@
                     })}})
       },
 
+      async ccercaGruppo(){
+        this.gruppi=[];
+          this.gruppiMaster = [],
+          this.gruppiPlayer = [];
+          let resp2 = await fetch('/api/group?code='+this.codice,
+          {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+          });
+          let data2 = await resp2.json();
+          if(resp2.status === 404)
+              alert('Il gruppo cercato non esiste')
+          else{
+            this.gruppi.push(data2.data);
+
+          let resp3 = await fetch('/api/user?id='+this.gruppi[0].master,
+            {
+              method: 'GET',
+              headers: {'Content-Type': 'application/json'},
+              credentials:'include',
+            });
+            if(resp3.status === 200 ){
+              let data3 = await resp3.json();
+              this.gruppiMaster.push(data3.username);
+            }
+            this.gruppiPlayer.push([]);
+            console.log("BBB"+this.gruppi[0])
+            for(let j=0; j<this.gruppi[0].characters.length; j++){
+              console.log("AAA"+this.gruppi[0].characters[j])
+              let resp4 = await fetch('/api/user?id='+this.gruppi[0].characters[j].user,
+              {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+                credentials:'include',
+              });
+              if(resp4.status === 200 ){
+                let data4 = await resp4.json();
+                console.log(data4.username);
+                this.gruppiPlayer[0].push(data4.username);
+              }
+            
+          }}
+      },
+
       inviaRichiesta(id){
         let send={
         character:this.selected,
         id:id
     }
-    fetch('http://localhost:8080/group/request',
+    fetch('/api/group/request',
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',
@@ -104,7 +150,7 @@
 
         <laber for="Code">Codice</laber>
         <input type="text" id="Code" v-model="codice">
-        <button @click="cercaGruppo" class="cerca">MOSTRA</button>
+        <button @click="ccercaGruppo" class="cerca">MOSTRA</button>
 
         <table>
           <thead>
@@ -126,8 +172,8 @@
             <td>{{ item.name }}</td>
             <td>{{ item.description }}</td>
             <td>{{ item.code }}</td>
-            <td>{{ item.master }}</td>
-            <td v-for="player in item.characters"> {{ player.user }} </td>
+            <td>{{ gruppiMaster[gruppi.indexOf(item)] }} </td>
+            <td v-for="player in item.characters"> {{ gruppiPlayer[gruppi.indexOf(item)][item.characters.indexOf(player)] }} </td>
             <td v-for="request in item.requests">Prenotato</td>
             <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
             <template v-if="(5 - (item.characters.length + item.requests.length))!=0 && control(item.master, item.requests) ">

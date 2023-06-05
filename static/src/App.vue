@@ -2,12 +2,11 @@
 import { RouterLink, RouterView, routerKey } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import Cookies from 'js-cookie';
-import axios from 'axios';
 
 export default{
     data() {
         return {
-            token: "",
+          token: false,
             loginData: {
                 loginMail: "",
                 loginPass: "",
@@ -19,34 +18,35 @@ export default{
                 regPass: "",
                 regPass1: "",
             },
+            Utente: '',
         };
     },
     methods: {
-        login() {
+        async login() {
             let values = {
-                input: this.loginData.loginMail,
-                password: this.loginData.loginPass
+              input: this.loginData.loginMail,
+              password: this.loginData.loginPass
             };
-            fetch("http://localhost:8080/user/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "true",
-                },
-                credentials: "include",
-                body: JSON.stringify(values)
-            })
-                .then((resp) => {
-                if (resp.status === 200) {
-                    resp.json();
-                    alert("Login avvenuto con sucesso");
-                    this.token = true;
-                }
-                else if (resp.status === 400) {
-                    alert("Email o password errati");
-                }
+            let resp = await fetch("/api/user/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Credentials": "true",
+              },
+            credentials: "include",
+              body: JSON.stringify(values)
             });
-        },
+            if (resp.status === 200) {
+              await resp.json();
+              alert("Login avvenuto con sucesso");
+              this.token=true;
+              this.Utente = Cookies.get('name');
+            }
+            else if (resp.status === 400) {
+              alert("Email o password errati");
+            }
+          },
+
         register() {
             var email = this.registerData.regMail;
             var username = this.registerData.regName;
@@ -61,7 +61,7 @@ export default{
                 password: password
             };
             if (regex.test(password) && password === password2) {
-                fetch("http://localhost:8080/user/register", {
+                fetch("/api/user/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(send),
@@ -146,13 +146,15 @@ export default{
     </div>
       <div class="wrapper" v-if="token">
 
-      <nav>
-        <RouterLink to="/home">Home</RouterLink>
-        <RouterLink to="/gruppi">Gruppi</RouterLink>
-        <RouterLink to="/personaggi">Personaggi</RouterLink>
-        <RouterLink class="hovered" to="/" @click="logout">Logout</RouterLink>
-      </nav>
-</div>
+        <nav>
+          <RouterLink to="/home">Home</RouterLink>
+          <RouterLink to="/gruppi">Gruppi</RouterLink>
+          <RouterLink to="/personaggi">Personaggi</RouterLink>
+          <RouterLink class="hovered" to="/" @click="logout">Logout</RouterLink>
+        </nav>
+
+        <div>Benvenuto {{Utente}}</div>
+      </div>
     </header>
     <RouterView />
 </template>

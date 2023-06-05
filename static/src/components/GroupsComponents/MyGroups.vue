@@ -5,36 +5,93 @@
     data() {
       return {
         gruppiMaster: [],
+        gruppiMasterMaster: [],
+        gruppiMasterPlayer: [],
         gruppiPlayer: [],
+        gruppiPlayerMaster: [],
+        gruppiPlayerPlayer: [],
+        richiestaNome: '',
         tmp: ''
       }
     },
     methods: {
-        visualizzaGruppi(){
-            this.gruppiMaster=[];
-            this.gruppiPlayer=[];
-            
-            fetch('http://localhost:8080/group/'+Cookies.get('id'),
-        {
+      async visualizzaGruppi(){
+          this.gruppiMaster=[];
+          this.gruppiMasterMaster = [],
+          this.gruppiMasterPlayer = [];
+          this.gruppiPlayer=[];
+          this.gruppiPlayerMaster = [],
+          this.gruppiPlayerPlayer = [];
+          let resp2 = await fetch('/api/group',
+          {
             method: 'GET',
-            headers: {'Content-Type': 'application/json'
-            },
-            credentials:'include'
-        })
-        .then((resp) => resp.json())
-        .then((data)=>{
-            for(let i=0; i<data.data.length; i++){
-                    if(Cookies.get('id') === data.data[i].master)
-                      {this.gruppiMaster.push(data.data[i]);}
-                    else
-                    {this.gruppiPlayer.push(data.data[i])}
+            headers: {'Content-Type': 'application/json'},
+              credentials:'include'
+          });
+          let data2 = await resp2.json();
+          for(let i=0; i<data2.data.length; i++)
+          if(Cookies.get('id') === data2.data[i].master)
+            this.gruppiMaster.push(data2.data[i]);
+          else if(this.control(Cookies.get('id'), data2.data[i]))
+            this.gruppiPlayer.push(data2.data[i]);
+
+            for(let i=0; i<this.gruppiMaster.length; i++){
+          let resp3 = await fetch('/api/user?id='+this.gruppiMaster[i].master,
+            {
+              method: 'GET',
+              headers: {'Content-Type': 'application/json'},
+              credentials:'include',
+            });
+            if(resp3.status === 200 ){
+              let data3 = await resp3.json();
+              this.gruppiMasterMaster.push(data3.username);
             }
-        })
+            this.gruppiMasterPlayer.push([]);
+            for(let j=0; j<this.gruppiMaster[i].characters.length; j++){
+              let resp4 = await fetch('/api/user?id='+this.gruppiMaster[i].characters[j].user,
+              {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+                credentials:'include',
+              });
+              if(resp4.status === 200 ){
+                let data4 = await resp4.json();
+                this.gruppiMasterPlayer[i].push(data4.username);
+              }
+            }
+          }
+          
+          for(let i=0; i<this.gruppiPlayer.length; i++){
+          let resp3 = await fetch('/api/user?id='+this.gruppiPlayer[i].master,
+            {
+              method: 'GET',
+              headers: {'Content-Type': 'application/json'},
+              credentials:'include',
+            });
+            if(resp3.status === 200 ){
+              let data3 = await resp3.json();
+              this.gruppiPlayerMaster.push(data3.username);
+            }
+            this.gruppiPlayerPlayer.push([]);
+            for(let j=0; j<this.gruppiPlayer[i].characters.length; j++){
+              let resp4 = await fetch('/api/user?id='+this.gruppiPlayer[i].characters[j].user,
+              {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+                credentials:'include',
+              });
+              if(resp4.status === 200 ){
+                let data4 = await resp4.json();
+                this.gruppiPlayerPlayer[i].push(data4.username);
+              }
+            }
+          }
         },
+
 
         cancellaGruppo(_id){
           if(confirm("Sei sicuro di voler cancellare il gruppo? La scelta è irreversibile!"))
-            {fetch('http://localhost:8080/group',
+            {fetch('/api/group',
         {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'
@@ -52,7 +109,7 @@
         },
 
         find(user_id){
-          fetch('http://localhost:8080/user?id='+user_id,
+          fetch('/api/user?id='+user_id,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -66,25 +123,50 @@
         })
         },
 
-        controlla(obj){
-          return (typeof obj !== 'undefined')
+        control(id, data){
+          let a=false;
+
+          data.characters.forEach(element => {
+              if(id === element.user ){
+                a=true;
+              }            
+          });
+
+          data.requests.forEach(element => {
+              if(id === element.user ){
+                a=true;
+              }            
+          });
+
+          return a;
         },
 
-        richiesta(i,j){
-          if(confirm("Vuoi accettare il seguente player nel gruppo? Utente: "+this.find(this.gruppiMaster[i].requests[j].user))){
-            fetch('http://localhost:8080/group/accept',{
+        async richiesta(group, request){
+          let resp3 = await fetch('/api/user?id='+request.user,
+            {
+              method: 'GET',
+              headers: {'Content-Type': 'application/json'},
+              credentials:'include',
+            });
+            if(resp3.status === 200 ){
+              let data3 = await resp3.json();
+              this.richiestaNome = data3.username;
+            }
+          if(confirm("Vuoi accettare il seguente player nel gruppo? Utente: "+ this.richiestaNome)){
+            fetch('/api/group/accept',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
-              body: JSON.stringify({id: this.gruppiMaster[i]._id, user: this.gruppiMaster[i].requests[j].user, character: this.gruppiMaster[i].requests[j].character, request: this.gruppiMaster[i].requests[j]._id})
+              body: JSON.stringify({id: group._id, user: request.user, character: request.character, request: request._id})
             })
               .then((resp)=>{
                 if(resp.status === 200)
                   alert('aggiunto');
+                  this.visualizzaGruppi();
               })
           }
           else{
-            fetch('http://localhost:8080/group/decline',{
+            fetch('/api/group/decline',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
@@ -93,26 +175,36 @@
               .then((resp)=>{
                 if(resp.status === 200)
                   alert('rifiutato');
+                  this.visualizzaGruppi();
               })
           }
-          this.visualizzaGruppi();
         },
 
-        removePlayer(group, player){
-          if(confirm("Vuoi davvero rimuovere il giocatore " + player + " dal gruppo " + group.name + "?")){
+        async removePlayer(group, player){
+          let resp3 = await fetch('/api/user?id='+player.user,
+            {
+              method: 'GET',
+              headers: {'Content-Type': 'application/json'},
+              credentials:'include',
+            });
+            if(resp3.status === 200 ){
+              let data3 = await resp3.json();
+              this.richiestaNome = data3.username;
+            }
+          if(confirm("Vuoi davvero rimuovere il giocatore " + this.richiestaNome + " dal gruppo " + group.name + "?")){
 
-          fetch('http://localhost:8080/group/remove',{
+          fetch('/api/group/remove',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
-              body: JSON.stringify({id: group, playerid: player})
+              body: JSON.stringify({id: group, playerid: player._id})
           })
               .then((resp)=>{
                   if(resp.status === 200)
                       alert('giocatore rimosso');
+                      this.visualizzaGruppi();
               })
           }
-          this.visualizzaGruppi();
         }
 
     },
@@ -155,9 +247,9 @@
             <td>{{ item.name }}</td>
             <td>{{ item.description }}</td>
             <td>{{ item.code }}</td>
-            <td>{{ item.master }}</td>
-            <td v-for="player in item.characters" @click="removePlayer(item._id, player._id)"> {{player.user}} </td>
-            <td v-for="request in item.requests"><Button class="cancella" @click="richiesta(gruppiMaster.indexOf(item), item.requests.indexOf(request))">Richiesta</Button></td>
+            <td>{{ gruppiMasterMaster[ gruppiMaster.indexOf(item)] }}</td>
+            <td v-for="player in item.characters" @click="removePlayer(item._id, player)"> {{gruppiMasterPlayer[gruppiMaster.indexOf(item)][item.characters.indexOf(player)]}} </td>
+            <td v-for="request in item.requests"><Button class="cancella" @click="richiesta(item, request)">Richiesta</Button></td>
             <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
             <button @click="cancellaGruppo(item._id)" class="delete"> X </button>
           </tr>
@@ -184,9 +276,9 @@
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
           <td>{{ item.code }}</td>
-          <td>{{ item.master }}</td>
-          <td v-for="player in item.characters"> {{player.user}} </td>
-          <td v-for="request in item.requests">Richiesta</td>
+          <td>{{ gruppiPlayerMaster[ gruppiPlayer.indexOf(item)] }}</td>
+          <td v-for="player in item.characters" > {{gruppiPlayerPlayer[gruppiPlayer.indexOf(item)][item.characters.indexOf(player)]}} </td>
+          <td v-for="request in item.requests">Richiesta inviata</td>
           <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
         </tr>
       </tbody>

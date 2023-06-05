@@ -16,7 +16,7 @@
     },
     methods: {
       createCharacter() {
-      fetch('http://localhost:8080/character',
+      fetch('/api/character',
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},

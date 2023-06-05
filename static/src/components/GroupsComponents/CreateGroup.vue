@@ -14,7 +14,7 @@ export default{
         createGroup(){
             
             if(!isNaN(parseFloat(this.newGroupData.size)) && isFinite(this.newGroupData.size) && this.newGroupData.size<=5 && this.newGroupData.size >=1) {
-                fetch('http://localhost:8080/group'
+                fetch('/api/group'
                     , {
                     method: 'POST'
                     ,

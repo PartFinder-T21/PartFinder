@@ -5,50 +5,77 @@
     data() {
       return {
         gruppi: [],
+        gruppiMaster: [],
+        gruppiPlayer: [],
         personaggi: [],
         selected: '',
         tmp: ''
       }
     },
     methods: {
-      caricaPgs(){
-            this.personaggi=[];
-            fetch('http://localhost:8080/character',
-        {
+      async caricaPgs(){
+        this.personaggi=[];
+          let resp1 = await fetch('/api/character',
+          {
             method: 'GET',
-            headers: {'Content-Type': 'application/json'
-            },
-            credentials:'include'
-        })
-        .then((resp) => resp.json())
-        .then((data)=>{
-            for(let i=0; i<data.data.length; i++){
-                    this.personaggi.push(data.data[i])
-            }
-        })
-
-            this.gruppi=[];
-        fetch('http://localhost:8080/group',
-        {
-            method: 'GET',
-            headers: {'Content-Type': 'application/json'
-            },
-            credentials:'include'
-        })
-        .then((resp) => resp.json())
-        .then((data)=>{
-          for(let i=0; i<data.data.length; i++){
-            this.gruppi.push(data.data[i]);
+          headers: {'Content-Type': 'application/json'},
+          credentials:'include'
+          });
+        let data1 = await resp1.json();
+          for(let i=0; i<data1.data.length; i++){
+            this.personaggi.push(data1.data[i])
           }
-        })
-      },
+
+          this.gruppi=[];
+          this.gruppiMaster = [],
+          this.gruppiPlayer = [];
+          let resp2 = await fetch('/api/group',
+          {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+              credentials:'include'
+          });
+          let data2 = await resp2.json();
+          for(let i=0; i<data2.data.length; i++){
+            this.gruppi.push(data2.data[i]);
+
+          let resp3 = await fetch('/api/user?id='+this.gruppi[i].master,
+            {
+              method: 'GET',
+              headers: {'Content-Type': 'application/json'},
+              credentials:'include',
+            });
+            if(resp3.status === 200 ){
+              let data3 = await resp3.json();
+              this.gruppiMaster.push(data3.username);
+            }
+            this.gruppiPlayer.push([]);
+            console.log("BBB"+this.gruppi[i])
+            for(let j=0; j<this.gruppi[i].characters.length; j++){
+              console.log("AAA"+this.gruppi[i].characters[j])
+              let resp4 = await fetch('/api/user?id='+this.gruppi[i].characters[j].user,
+              {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+                credentials:'include',
+              });
+              if(resp4.status === 200 ){
+                let data4 = await resp4.json();
+                console.log(data4.username);
+                this.gruppiPlayer[i].push(data4.username);
+              }
+            }
+          }
+        },
+
+
 
       inviaRichiesta(id){
         let send={
         character:this.selected,
         id:id
     }
-    fetch('http://localhost:8080/group/request',
+    fetch('/api/group/request',
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',
@@ -125,8 +152,8 @@
             <td>{{ item.name }}</td>
             <td>{{ item.description }}</td>
             <td>{{ item.code }}</td>
-            <td>{{ item.master }}</td>
-            <td v-for="player in item.characters"> {{ player.user }} </td>
+            <td>{{ gruppiMaster[gruppi.indexOf(item)] }}</td>
+            <td v-for="player in item.characters"> {{ gruppiPlayer[gruppi.indexOf(item)][item.characters.indexOf(player)] }}</td>
             <td v-for="request in item.requests">Prenotato</td>
             <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
             <template v-if="(5 - (item.characters.length + item.requests.length))!=0 && control(item.master, item.requests, item.characters) ">
