@@ -11,6 +11,7 @@ const diceRoute = require('./routes/dice');
 const cookie_parser=require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+const corsMiddleware = require("./corsMiddleware");
 
 const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 
@@ -27,6 +28,7 @@ app.use(cors({
     },
     credentials: true
 }));
+app.use(corsMiddleware);
 app.use('/',routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 if(process.env.NODE_ENV === 'production') {
