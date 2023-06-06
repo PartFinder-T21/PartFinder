@@ -17,7 +17,7 @@ const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 app.use(cookie_parser());
 app.use(express.json());
 app.use(cors({
-    origin: '*',
+    origin: true,
     credentials: true
 }));
 app.use('/',routes);
