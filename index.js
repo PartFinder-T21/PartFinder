@@ -11,7 +11,6 @@ const diceRoute = require('./routes/dice');
 const cookie_parser=require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
-const corsMiddleware = require("./corsMiddleware");
 const cookieSession = require('cookie-session');
 const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 
@@ -27,16 +26,8 @@ app.use(
         sameSite: 'none'
     })
 );
+app.enable('trust proxy');
 app.use(express.json());
-const allowedOrigins = [
-    "https://partfindert21.onrender.com/",
-    "http://partfindert21.onrender.com/",
-    "https://partfindert21web.onrender.com/",
-    "http://partfindert21web.onrender.com/",
-    "http://localhost:3000",
-    "http://localhost:8080"
-];
-
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "https://partfindert21.onrender.com"); // Sostituisci "http://example.com" con l'origine consentita per le richieste
     res.header("Access-Control-Allow-Headers", "Content-Type,Access-Control-Allow-Credentials");
