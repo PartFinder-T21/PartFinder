@@ -17,18 +17,28 @@ const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 
 app.use(cookie_parser());
 app.use(express.json());
-app.use(cors({
-    origin: true,
-    headers: {
-        'Access-Control-Allow-Origin': ["http://localhost:8080","http://localhost:3000","https://partfindert21.onrender.com/","http://partfindert21.onrender.com/"],
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-        'Access-Control-Allow-Credentials': true,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Headers": "Content-Type"
+const allowedOrigins = [
+    "https://partfindert21.onrender.com/",
+    "http://partfindert21.onrender.com/",
+    "https://partfindert21web.onrender.com/",
+    "http://partfindert21web.onrender.com/",
+    "http://localhost:3000",
+    "http://localhost:8080"
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
     },
-    credentials: true
-}));
-app.use(corsMiddleware);
+    methods: "GET,PUT,POST,DELETE,OPTIONS",
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use('/',routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 if(process.env.NODE_ENV === 'production') {
