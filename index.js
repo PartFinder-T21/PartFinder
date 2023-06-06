@@ -20,7 +20,7 @@ app.use(
         name: "__session",
         keys: ["key1"],
         maxAge: 24 * 60 * 60 * 100,
-        domain: 'https://partfindert21.onrender.com/',
+        domain: 'localhost',
         secure: true,
         httpOnly: true,
         sameSite: 'none'
@@ -29,7 +29,7 @@ app.use(
 app.enable('trust proxy');
 app.use(express.json());
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://partfindert21.onrender.com"); // Sostituisci "http://example.com" con l'origine consentita per le richieste
+    res.header("Access-Control-Allow-Origin", "localhost"); // Sostituisci "http://example.com" con l'origine consentita per le richieste
     res.header("Access-Control-Allow-Headers", "Content-Type,Access-Control-Allow-Credentials");
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Credentials", true);
