@@ -12,10 +12,18 @@ const cookie_parser=require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const corsMiddleware = require("./corsMiddleware");
-
+const cookieSession = require('cookie-session');
 const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 
 app.use(cookie_parser());
+app.use(cookieSession({
+    name: 'session',
+    secret: 'cookie',
+    domain: 'https://partfindert21.onrender.com/',
+    sameSite: 'none',
+    secure: true,
+    httpOnly: true
+}));
 app.use(express.json());
 const allowedOrigins = [
     "https://partfindert21.onrender.com/",

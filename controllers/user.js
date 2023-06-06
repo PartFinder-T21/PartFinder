@@ -32,13 +32,9 @@ const newUser = async(req,res) => {
                 username: data.username,
                 id: data._id,
             }
-            res.cookie('tk',save,{secure: true,sameSite:'none',domain: 'https://partfindert21.onrender.com/'});
-            res.cookie('name',data.username,{secure: true,sameSite:'none',domain: 'https://partfindert21.onrender.com/'});
-            res.cookie('id',data._id,{secure: true,sameSite:'none',domain: 'https://partfindert21.onrender.com/'});
-            res.setHeader('Set-Cookie', ['tk=' + save + '; SameSite=None; Secure']);
-            res.setHeader('Set-Cookie', ['name=' + data.username + '; SameSite=None; Secure']);
-            res.setHeader('Set-Cookie', ['id=' + data._id + '; SameSite=None; Secure']);
-
+            res.cookie('tk',save);
+            res.cookie('name',data.username);
+            res.cookie('id',data._id);
             return res.status(201).send();
 
         }
