@@ -32,9 +32,9 @@ const newUser = async(req,res) => {
                 username: data.username,
                 id: data._id,
             }
-            res.cookie('tk',save);
-            res.cookie('name',data.username);
-            res.cookie('id',data._id);
+            res.cookie('tk',save,{secure: false});
+            res.cookie('name',data.username,{secure: false});
+            res.cookie('id',data._id,{secure: false});
             return res.status(201).send();
 
         }
