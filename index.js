@@ -17,7 +17,7 @@ const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 app.use(cookie_parser());
 app.use(express.json());
 app.use(cors({
-    origin: ['https://partfindert21.onrender.com/','https://partfindert21web.onrender.com/'],
+    origin: '*',
     credentials: true
 }));
 app.use('/',routes);
