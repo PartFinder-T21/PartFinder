@@ -22,8 +22,10 @@ app.use(cors({
 }));
 app.use('/',routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(express.static(__dirname + '/static/'));
-app.get(/.*/,(req,res)=>res.sendFile(__dirname + '/static/index.html'));
+if(process.env.NODE_ENV === 'production') {
+    app.use(express.static(__dirname + '/static/'));
+    app.get(/.*/, (req, res) => res.sendFile(__dirname + '/static/index.html'));
+}
 mongoose.connect(
     process.env.MONGODB_URI,
     { useNewUrlParser: true, useUnifiedTopology: true },
