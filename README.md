@@ -6,7 +6,7 @@ SERVER:
     -GO TO PARTFINDER FOLDER
     -WRITE "npm install dotenv"
     -ADD THE ".env" file into a folder named "misc"
-    -WRITE "node index.js"
+    -WRITE "node server.js"
 
 CLIENT:
 -OPEN CMD
