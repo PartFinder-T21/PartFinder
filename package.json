@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "swagger-autogen": "node ./swagger.js"
+    "swagger-autogen": "node ./swagger.js",
+    "build": "npm run --prefix ./static build"
   },
   "repository": {
     "type": "git",
@@ -39,7 +40,8 @@
     "mongoose-express-api": "0.0.3",
     "swagger-autogen": "^2.22.0",
     "swagger-jsdoc": "^6.2.7",
-    "swagger-ui-express": "^4.6.0"
+    "swagger-ui-express": "^4.6.0",
+    "vite": "^4.3.9"
   },
   "devDependencies": {
     "jest": "^29.3.1",
