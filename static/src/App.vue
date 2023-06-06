@@ -2,7 +2,6 @@
 import { RouterLink, RouterView, routerKey } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import Cookies from 'js-cookie';
-import { API_URL } from "static/vite.config.js";
 
 
 export default{
