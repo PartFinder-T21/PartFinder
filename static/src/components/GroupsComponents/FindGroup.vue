@@ -16,7 +16,7 @@
     methods: {
       caricaPgs(){
             this.personaggi=[];
-            fetch('/api/character',
+            fetch('${API_URL}/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'

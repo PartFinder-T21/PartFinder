@@ -14,16 +14,6 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  },
-  server:{
-    host: true,
-    proxy:{
-      "/api": {
-        target:"https://partfindert21web.onrender.com/",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/,'')
-      }
-    }
   }
 })
+export const API_URL = "https://partfindert21web.onrender.com/";

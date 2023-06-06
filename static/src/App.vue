@@ -2,6 +2,8 @@
 import { RouterLink, RouterView, routerKey } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import Cookies from 'js-cookie';
+import { API_URL } from "static/vite.config.js";
+
 
 export default{
     data() {
@@ -27,7 +29,7 @@ export default{
               input: this.loginData.loginMail,
               password: this.loginData.loginPass
             };
-            let resp = await fetch("/api/user/login", {
+            let resp = await fetch("${API_URL}/user/login", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -61,7 +63,7 @@ export default{
                 password: password
             };
             if (regex.test(password) && password === password2) {
-                fetch("/api/user/register", {
+                fetch("${API_URL}/user/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(send),
