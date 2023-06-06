@@ -8,9 +8,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
+    "backend": "node index.js",
     "swagger-autogen": "node ./swagger.js",
-    "build": "npm run --prefix ./static build"
+    "build": "npm run --prefix ./static build",
+    "frontend": "npm run --prefix ./static dev"
   },
   "repository": {
     "type": "git",
@@ -40,10 +41,36 @@
     "mongoose-express-api": "0.0.3",
     "swagger-autogen": "^2.22.0",
     "swagger-jsdoc": "^6.2.7",
-    "swagger-ui-express": "^4.6.0"
+    "swagger-ui-express": "^4.6.0",
+    "@types/web-bluetooth": "^0.0.17",
+    "@vueuse/core": "^10.1.2",
+    "@vueuse/integrations": "^10.1.2",
+    "@vueuse/metadata": "^10.1.2",
+    "@vueuse/shared": "^10.1.2",
+    "async-validator": "^4.2.5",
+    "change-case": "^4.1.2",
+    "drauu": "^0.3.2",
+    "focus-trap": "^7.4.3",
+    "fuse.js": "^6.6.2",
+    "idb-keyval": "^6.2.1",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^3.1.2",
+    "nprogress": "^0.2.0",
+    "qrcode": "^1.5.3",
+    "sortablejs": "^1.15.0",
+    "tiny-emitter": "^2.1.0",
+    "universal-cookie": "^4.0.4",
+    "vue": "^3.3.2",
+    "vue-cookies": "^1.8.3",
+    "vue-cookies-reactive": "^2.1.1",
+    "vue-demi": "^0.14.5",
+    "vue-router": "^4.0.13",
+    "vue-select": "^4.0.0-beta.6"
   },
   "devDependencies": {
     "jest": "^29.3.1",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.3.5"
   }
 }
