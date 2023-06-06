@@ -16,4 +16,3 @@ export default defineConfig({
     }
   }
 })
-export const API_URL = "https://partfindert21web.onrender.com/";
