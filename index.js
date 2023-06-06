@@ -26,19 +26,14 @@ const allowedOrigins = [
     "http://localhost:8080"
 ];
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (allowedOrigins.includes(origin) || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    methods: "GET,PUT,POST,DELETE,OPTIONS",
-    credentials: true,
-};
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", allowedOrigins); // Sostituisci "http://example.com" con l'origine consentita per le richieste
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Credentials", true);
+    next();
+});
 
-app.use(cors(corsOptions));
 app.use('/',routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 if(process.env.NODE_ENV === 'production') {
