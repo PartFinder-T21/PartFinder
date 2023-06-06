@@ -20,8 +20,8 @@ app.use(cors({
     origin: true,
     headers: {
         'Access-Control-Allow-Origin': ["http://localhost:8080","http://localhost:3000","https://partfindert21.onrender.com/","http://partfindert21.onrender.com/"],
-        'Access-Control-Allow-Methods': ['GET,PUT,POST,DELETE'],
-        "Access-Control-Allow-Headers": ["Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"]
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+        "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
     },
     credentials: true
 }));
