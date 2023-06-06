@@ -1,6 +1,6 @@
 const request = require('supertest');
 const cookieParser = require('cookie-parser');
-const app = require("./server");
+const app = require("./index");
 const {agent} = require("supertest");
 const agent1 = request.agent(app);
 const agent2 = request.agent(app);

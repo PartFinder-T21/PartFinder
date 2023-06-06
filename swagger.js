@@ -16,5 +16,5 @@ const endpointsFiles = ['./routes/character.js', './routes/group.js','./routes/u
    such as index.js, app.js, routes.js, ... */
 
 swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
-    require('./server.js'); // Your project's root file
+    require('./index.js'); // Your project's root file
 });
