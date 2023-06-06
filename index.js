@@ -29,7 +29,7 @@ app.use(
 app.enable('trust proxy');
 app.use(express.json());
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); // Sostituisci "http://example.com" con l'origine consentita per le richieste
+    res.header("Access-Control-Allow-Origin", req.header('Origin')); // Sostituisci "http://example.com" con l'origine consentita per le richieste
     res.header("Access-Control-Allow-Headers", "Content-Type,Access-Control-Allow-Credentials");
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Credentials", true);
