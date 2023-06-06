@@ -17,7 +17,7 @@ export default defineConfig({
   },
   server: {
     cors: {
-      origin: false
+      origin: true
     }
   }
 })
