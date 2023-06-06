@@ -16,14 +16,17 @@ const cookieSession = require('cookie-session');
 const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 
 app.use(cookie_parser());
-app.use(cookieSession({
-    name: 'session',
-    secret: 'cookie',
-    domain: 'https://partfindert21.onrender.com/',
-    sameSite: 'none',
-    secure: true,
-    httpOnly: true
-}));
+app.use(
+    cookieSession({
+        name: "__session",
+        keys: ["key1"],
+        maxAge: 24 * 60 * 60 * 100,
+        domain: 'https://partfindert21.onrender.com/',
+        secure: true,
+        httpOnly: true,
+        sameSite: 'none'
+    })
+);
 app.use(express.json());
 const allowedOrigins = [
     "https://partfindert21.onrender.com/",
