@@ -35,6 +35,10 @@ const newUser = async(req,res) => {
             res.cookie('tk',save,{secure: true,sameSite:'none'});
             res.cookie('name',data.username,{secure: true,sameSite:'none'});
             res.cookie('id',data._id,{secure: true,sameSite:'none'});
+            res.setHeader('Set-Cookie', ['tk=' + save + '; SameSite=None; Secure']);
+            res.setHeader('Set-Cookie', ['name=' + data.username + '; SameSite=None; Secure']);
+            res.setHeader('Set-Cookie', ['id=' + data._id + '; SameSite=None; Secure']);
+
             return res.status(201).send();
 
         }
