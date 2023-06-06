@@ -16,7 +16,8 @@ export default defineConfig({
     }
   },
   server: {
-    open: true,
-    origin: 'https://partfindert21web.onrender.com/'
-  },
+    cors: {
+      origin: false
+    }
+  }
 })
