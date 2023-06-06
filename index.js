@@ -15,18 +15,6 @@ const cookieSession = require('cookie-session');
 const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 
 app.use(cookie_parser());
-app.use(
-    cookieSession({
-        name: "__session",
-        keys: ["key1"],
-        maxAge: 24 * 60 * 60 * 100,
-        domain: 'localhost',
-        secure: true,
-        httpOnly: true,
-        sameSite: 'none'
-    })
-);
-app.enable('trust proxy');
 app.use(express.json());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", req.header('Origin')); // Sostituisci "http://example.com" con l'origine consentita per le richieste
