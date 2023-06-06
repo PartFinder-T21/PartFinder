@@ -32,9 +32,6 @@ mongoose.connect(
     }
 );
 
-const listener = app.listen(process.env.PORT || 3000, () =>{
-    console.log('App listening on port ' + listener.address().port);
-    console.log(process.env.MONGODB_URI);
-})
+const listener = app.listen(process.env.PORT || 3000,'127.0.0.1');
 
 module.exports = app;

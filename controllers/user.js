@@ -42,8 +42,6 @@ const newUser = async(req,res) => {
 }
 
 const login = (req,res) => {
-    console.log(req.body.input);
-    console.log(req.body.password);
     User.findOne({$or:[{email:req.body.input},{username:req.body.input}]},(err,data)=>{
         if(err) return res.status(500).json({message:"Unexpected error",status:500});
         else if(!data) return res.status(400).json({message:"Username or password is wrong",status:400});
