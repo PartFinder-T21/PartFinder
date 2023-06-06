@@ -1,16 +1,11 @@
 TO START THE SITE:
+Open root folder in terminal and run 'npm install' to install all dependencies.
 
 
 SERVER:
--OPEN CMD
-    -GO TO PARTFINDER FOLDER
-    -WRITE "npm install dotenv"
-    -ADD THE ".env" file into a folder named "misc"
-    -WRITE "node server.js"
+-IN TERMINAL
+    type 'npm run backend' in root folder.
 
 CLIENT:
--OPEN CMD
-    -GO TO PARTFINDER/STATIC FOLDER
-    -WRITE "npm install"
-    -WRITE "npm run dev"
-    -OPEN THE BROWSER AND SEARCH FOR THE SITE WRITTEN IN THE CMD
+-IN TERMINAL
+    type 'npm run frontend' in root folder.
