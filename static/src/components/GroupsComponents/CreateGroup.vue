@@ -1,5 +1,4 @@
 <script>
-import { API_URL } from "static/vite.config.js";
 export default{
     data() {
       return {
