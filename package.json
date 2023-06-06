@@ -2,10 +2,13 @@
   "name": "partfinder",
   "version": "1.0.0",
   "description": "partfinder project",
-  "main": "app.js",
+  "main": "server.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
+    "start": "node server.js",
     "swagger-autogen": "node ./swagger.js"
   },
   "repository": {
