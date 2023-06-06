@@ -191,7 +191,7 @@
               let data3 = await resp3.json();
               this.richiestaNome = data3.username;
             }
-          if(confirm("Vuoi davvero rimuovere il giocatore " + this.richiestaNome + " dal gruppo " + group.name + "?")){
+          if(confirm("Vuoi davvero rimuovere il giocatore " + this.richiestaNome + " dal gruppo?")){
 
           fetch('/api/group/remove',{
               method: 'PUT',

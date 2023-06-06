@@ -115,7 +115,7 @@ export default{
     <div class="intern" v-if="!token">
       <div class="form-title-login">LOGIN</div>
 
-      <label for="loginMail">Email</label>
+      <label for="loginMail">Email/Username</label>
       <input type="text" v-model="loginData.loginMail" id="loginMail">
 
       <label for="loginPass">Password</label>
