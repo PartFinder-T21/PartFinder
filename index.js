@@ -23,7 +23,8 @@ app.use(cors({
 app.use('/',routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 if(process.env.NODE_ENV === 'production') {
-    app.use(express.static(__dirname + '/static/'));
+    app.use(express.static(__dirname + '/static/public'));
+    app.use('/', express.static(path.join(__dirname, 'public')))
     app.get(/.*/, (req, res) => res.sendFile(__dirname + '/static/index.html'));
 }
 mongoose.connect(
@@ -35,6 +36,6 @@ mongoose.connect(
     }
 );
 
-const listener = app.listen(process.env.PORT || 3000,'127.0.0.1');
+const listener = app.listen(process.env.PORT || 3000,'0.0.0.0');
 
 module.exports = app;
