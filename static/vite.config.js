@@ -19,7 +19,7 @@ export default defineConfig({
     host: true,
     proxy:{
       "/api": {
-        target:"http://localhost:8080/",
+        target:"https://partfindert21web.onrender.com/",
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/,'')
