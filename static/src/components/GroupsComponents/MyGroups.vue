@@ -191,13 +191,13 @@
               let data3 = await resp3.json();
               this.richiestaNome = data3.username;
             }
-          if(confirm("Vuoi davvero rimuovere il giocatore " + this.richiestaNome + " dal gruppo?")){
+          if(confirm("Vuoi davvero rimuovere il giocatore " + this.richiestaNome + " dal gruppo" + group.name +"?")){
 
           fetch('/api/group/remove',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
-              body: JSON.stringify({id: group, playerid: player._id})
+              body: JSON.stringify({id: group._id, playerid: player._id})
           })
               .then((resp)=>{
                   if(resp.status === 200)
@@ -248,7 +248,7 @@
             <td>{{ item.description }}</td>
             <td>{{ item.code }}</td>
             <td>{{ gruppiMasterMaster[ gruppiMaster.indexOf(item)] }}</td>
-            <td v-for="player in item.characters" @click="removePlayer(item._id, player)"> {{gruppiMasterPlayer[gruppiMaster.indexOf(item)][item.characters.indexOf(player)]}} </td>
+            <td v-for="player in item.characters" @click="removePlayer(item, player)"> {{gruppiMasterPlayer[gruppiMaster.indexOf(item)][item.characters.indexOf(player)]}} </td>
             <td v-for="request in item.requests"><Button class="cancella" @click="richiesta(item, request)">Richiesta</Button></td>
             <td v-for="(value, index) in 5 - (item.characters.length + item.requests.length)"> X </td>
             <button @click="cancellaGruppo(item._id)" class="delete"> X </button>
