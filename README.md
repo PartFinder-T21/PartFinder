@@ -7,5 +7,5 @@ SERVER:
     type 'npm run backend' in root folder.
 
 CLIENT:
--IN TERMINAL
+-IN ANOTHER TERMINAL
     type 'npm run frontend' in root folder.
