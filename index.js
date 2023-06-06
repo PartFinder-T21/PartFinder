@@ -17,7 +17,7 @@ const routes=[userRoute,characterRoute,groupRoute,diceRoute];
 app.use(cookie_parser());
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:8080","http://localhost:3000","https://partfindert21.onrender.com/","http://partfindert21.onrender.com/"],
+    origin: true,
     headers: {
         'Access-Control-Allow-Origin': ["http://localhost:8080","http://localhost:3000","https://partfindert21.onrender.com/","http://partfindert21.onrender.com/"],
         'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
