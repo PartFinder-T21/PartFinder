@@ -15,7 +15,7 @@
     methods: {
       async caricaPgs(){
         this.personaggi=[];
-          let resp1 = await fetch('/api/character',
+          let resp1 = await fetch('https://partfindert21web.onrender.com/character',
           {
             method: 'GET',
           headers: {'Content-Type': 'application/json'},
@@ -29,7 +29,7 @@
           this.gruppi=[];
           this.gruppiMaster = [],
           this.gruppiPlayer = [];
-          let resp2 = await fetch('/api/group',
+          let resp2 = await fetch('https://partfindert21web.onrender.com/group',
           {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -39,7 +39,7 @@
           for(let i=0; i<data2.data.length; i++){
             this.gruppi.push(data2.data[i]);
 
-          let resp3 = await fetch('/api/user?id='+this.gruppi[i].master,
+          let resp3 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppi[i].master,
             {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
@@ -53,7 +53,7 @@
             console.log("BBB"+this.gruppi[i])
             for(let j=0; j<this.gruppi[i].characters.length; j++){
               console.log("AAA"+this.gruppi[i].characters[j])
-              let resp4 = await fetch('/api/user?id='+this.gruppi[i].characters[j].user,
+              let resp4 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppi[i].characters[j].user,
               {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'},
@@ -75,7 +75,7 @@
         character:this.selected,
         id:id
     }
-    fetch('/api/group/request',
+    fetch('https://partfindert21web.onrender.com/group/request',
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',

@@ -13,7 +13,7 @@ export default{
         createGroup(){
             
             if(!isNaN(parseFloat(this.newGroupData.size)) && isFinite(this.newGroupData.size) && this.newGroupData.size<=5 && this.newGroupData.size >=1) {
-                fetch('${API_URL}/group'
+                fetch('https://partfindert21web.onrender.com/group'
                     , {
                     method: 'POST'
                     ,

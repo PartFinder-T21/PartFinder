@@ -16,7 +16,7 @@
     },
     methods: {
       createCharacter() {
-      fetch('/api/character',
+      fetch('https://partfindert21web.onrender.com/character',
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
