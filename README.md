@@ -1,3 +1,6 @@
+CLONE THE REPO:
+git clone https://github.com/PartFinder-T21/PartFinder.git
+
 TO START THE SITE:
 Open root folder in terminal and run 'npm install' to install all dependencies.
 
