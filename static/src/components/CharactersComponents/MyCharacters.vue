@@ -10,7 +10,7 @@
     methods: {
         visualizzaPgs(){
             this.personaggi=[];
-            fetch('https://partfindert21web.onrender.com/character',
+            fetch(API_URL+'/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
