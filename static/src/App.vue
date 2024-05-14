@@ -28,7 +28,7 @@ export default{
               input: this.loginData.loginMail,
               password: this.loginData.loginPass
             };
-            let resp = await fetch("https://partfindert21web.onrender.com/user/login", {
+            let resp = await fetch("https://api.parthfinder.it/user/login", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export default{
                 password: password
             };
             if (regex.test(password) && password === password2) {
-                fetch("https://partfindert21web.onrender.com/user/register", {
+                fetch("https://api.parthfinder.it/user/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(send),

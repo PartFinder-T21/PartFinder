@@ -26,16 +26,13 @@ app.use(function(req, res, next) {
 
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/',routes);
 if(process.env.NODE_ENV === 'production') {
-    app.use('api.parthfinder.it/',routes);
     app.use(express.static(__dirname + '/static/public'));
     app.use('/', express.static(path.join(__dirname, 'public')))
     app.get(/.*/, (req, res) => res.sendFile(__dirname + '/static/index.html'));
 }
 
-else{
-    app.use('/',routes);
-}
 mongoose.connect(
     process.env.MONGODB_URI,
     { useNewUrlParser: true, useUnifiedTopology: true },
