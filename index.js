@@ -24,12 +24,16 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/',routes);
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 if(process.env.NODE_ENV === 'production') {
+    app.use('api.parthfinder.it/',routes);
     app.use(express.static(__dirname + '/static/public'));
     app.use('/', express.static(path.join(__dirname, 'public')))
     app.get(/.*/, (req, res) => res.sendFile(__dirname + '/static/index.html'));
+}
+else {
+    app.use('/',routes);
 }
 mongoose.connect(
     process.env.MONGODB_URI,
@@ -40,6 +44,6 @@ mongoose.connect(
     }
 );
 
-const listener = app.listen(process.env.PORT || 3000,'0.0.0.0');
+const listener = app.listen(process.env.PORT || 3000,'parthfinder.it');
 
 module.exports = app;
