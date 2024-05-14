@@ -45,6 +45,6 @@ mongoose.connect(
     }
 );
 
-const listener = app.listen(3000,'0.0.0.0');
+const listener = app.listen(process.env.PORT || 3000,'0.0.0.0');
 
 module.exports = app;
