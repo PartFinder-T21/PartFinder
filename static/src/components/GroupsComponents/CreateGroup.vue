@@ -1,4 +1,6 @@
 <script>
+import {API_URL} from "@/main";
+
 export default{
     data() {
       return {
@@ -13,7 +15,7 @@ export default{
         createGroup(){
             
             if(!isNaN(parseFloat(this.newGroupData.size)) && isFinite(this.newGroupData.size) && this.newGroupData.size<=5 && this.newGroupData.size >=1) {
-                fetch('https://partfindert21web.onrender.com/group'
+                fetch(API_URL+'/group'
                     , {
                     method: 'POST'
                     ,

@@ -1,4 +1,6 @@
 <script>
+  import {API_URL} from "@/main";
+
   export default {
     data() {
       return {
@@ -25,7 +27,7 @@
 
         cancellaPg(_id){
           if(confirm("Sei sicuro di voler cancellare il personaggio? La scelta è irreversibile!"))
-            {fetch('https://partfindert21web.onrender.com/character',
+            {fetch(API_URL+'/character',
         {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'

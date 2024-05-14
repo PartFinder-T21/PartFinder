@@ -1,5 +1,6 @@
 <script>
   import Cookies from 'js-cookie'
+  import {API_URL} from "@/main";
 
     export default {
     data() {
@@ -16,7 +17,7 @@
     methods: {
       caricaPgs(){
             this.personaggi=[];
-            fetch('https://partfindert21web.onrender.com/character',
+            fetch(API_URL+'/character',
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -32,7 +33,7 @@
       },
       cercaGruppo(){
             this.gruppi=[];
-            fetch('https://partfindert21web.onrender.com/group?code='+this.codice,
+            fetch(API_URL+'/group?code='+this.codice,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -51,7 +52,7 @@
         this.gruppi=[];
           this.gruppiMaster = [],
           this.gruppiPlayer = [];
-          let resp2 = await fetch('https://partfindert21web.onrender.com/group?code='+this.codice,
+          let resp2 = await fetch(API_URL+'/group?code='+this.codice,
           {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -62,7 +63,7 @@
           else{
             this.gruppi.push(data2.data);
 
-          let resp3 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppi[0].master,
+          let resp3 = await fetch(API_URL+'/user?id='+this.gruppi[0].master,
             {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
@@ -76,7 +77,7 @@
             console.log("BBB"+this.gruppi[0])
             for(let j=0; j<this.gruppi[0].characters.length; j++){
               console.log("AAA"+this.gruppi[0].characters[j])
-              let resp4 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppi[0].characters[j].user,
+              let resp4 = await fetch(API_URL+'/user?id='+this.gruppi[0].characters[j].user,
               {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'},
@@ -96,7 +97,7 @@
         character:this.selected,
         id:id
     }
-    fetch('https://partfindert21web.onrender.com/group/request',
+    fetch(API_URL+'/group/request',
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',

@@ -1,4 +1,6 @@
 <script>
+    import {API_URL} from "@/main";
+
     export default{
     data() {
       return {
@@ -16,7 +18,7 @@
     },
     methods: {
       createCharacter() {
-      fetch('https://partfindert21web.onrender.com/character',
+      fetch(API_URL+'/character',
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},

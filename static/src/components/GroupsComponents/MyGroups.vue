@@ -1,5 +1,6 @@
 <script>
   import Cookies from 'js-cookie'
+  import {API_URL} from "@/main";
 
     export default {
     data() {
@@ -22,7 +23,7 @@
           this.gruppiPlayer=[];
           this.gruppiPlayerMaster = [],
           this.gruppiPlayerPlayer = [];
-          let resp2 = await fetch('https://partfindert21web.onrender.com/group',
+          let resp2 = await fetch(API_URL+'/group',
           {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -36,7 +37,7 @@
             this.gruppiPlayer.push(data2.data[i]);
 
             for(let i=0; i<this.gruppiMaster.length; i++){
-          let resp3 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppiMaster[i].master,
+          let resp3 = await fetch(API_URL+'/user?id='+this.gruppiMaster[i].master,
             {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
@@ -48,7 +49,7 @@
             }
             this.gruppiMasterPlayer.push([]);
             for(let j=0; j<this.gruppiMaster[i].characters.length; j++){
-              let resp4 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppiMaster[i].characters[j].user,
+              let resp4 = await fetch(APU_URL+'/user?id='+this.gruppiMaster[i].characters[j].user,
               {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'},
@@ -62,7 +63,7 @@
           }
           
           for(let i=0; i<this.gruppiPlayer.length; i++){
-          let resp3 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppiPlayer[i].master,
+          let resp3 = await fetch(API_URL+'/user?id='+this.gruppiPlayer[i].master,
             {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
@@ -74,7 +75,7 @@
             }
             this.gruppiPlayerPlayer.push([]);
             for(let j=0; j<this.gruppiPlayer[i].characters.length; j++){
-              let resp4 = await fetch('https://partfindert21web.onrender.com/user?id='+this.gruppiPlayer[i].characters[j].user,
+              let resp4 = await fetch(API_URL+'/user?id='+this.gruppiPlayer[i].characters[j].user,
               {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'},
@@ -91,7 +92,7 @@
 
         cancellaGruppo(_id){
           if(confirm("Sei sicuro di voler cancellare il gruppo? La scelta è irreversibile!"))
-            {fetch('https://partfindert21web.onrender.com/group',
+            {fetch(API_URL+'/group',
         {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'
@@ -109,7 +110,7 @@
         },
 
         find(user_id){
-          fetch('https://partfindert21web.onrender.com/user?id='+user_id,
+          fetch(API_URL+'/user?id='+user_id,
         {
             method: 'GET',
             headers: {'Content-Type': 'application/json'
@@ -142,7 +143,7 @@
         },
 
         async richiesta(group, request){
-          let resp3 = await fetch('https://partfindert21web.onrender.com/user?id='+request.user,
+          let resp3 = await fetch(API_URL+'/user?id='+request.user,
             {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
@@ -153,7 +154,7 @@
               this.richiestaNome = data3.username;
             }
           if(confirm("Vuoi accettare il seguente player nel gruppo? Utente: "+ this.richiestaNome)){
-            fetch('https://partfindert21web.onrender.com/group/accept',{
+            fetch(API_URL+'/group/accept',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
@@ -166,7 +167,7 @@
               })
           }
           else{
-            fetch('https://partfindert21web.onrender.com/group/decline',{
+            fetch(API_URL+'/group/decline',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
@@ -181,7 +182,7 @@
         },
 
         async removePlayer(group, player){
-          let resp3 = await fetch('https://partfindert21web.onrender.com/user?id='+player.user,
+          let resp3 = await fetch(API_URL+'/user?id='+player.user,
             {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
@@ -193,7 +194,7 @@
             }
           if(confirm("Vuoi davvero rimuovere il giocatore " + this.richiestaNome + " dal gruppo?")){
 
-          fetch('https://partfindert21web.onrender.com/group/remove',{
+          fetch(API_URL+'/group/remove',{
               method: 'PUT',
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
