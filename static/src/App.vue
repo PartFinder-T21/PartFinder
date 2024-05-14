@@ -113,7 +113,7 @@ export default{
 
 <template>
   <header>
-    <h1 class="title">PARTFINDER</h1>
+    <h1 class="title">PARTHFINDER</h1>
     <div class="intern" v-if="!token">
       <div class="form-title-login">LOGIN</div>
 
