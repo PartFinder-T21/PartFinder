@@ -32,7 +32,8 @@ if(process.env.NODE_ENV === 'production') {
     app.use('/', express.static(path.join(__dirname, 'public')))
     app.get(/.*/, (req, res) => res.sendFile(__dirname + '/static/index.html'));
 }
-else {
+
+else{
     app.use('/',routes);
 }
 mongoose.connect(
@@ -44,6 +45,6 @@ mongoose.connect(
     }
 );
 
-const listener = app.listen(process.env.PORT || 3000,'parthfinder.it');
+const listener = app.listen(3000,'0.0.0.0');
 
 module.exports = app;
