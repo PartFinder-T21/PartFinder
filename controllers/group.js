@@ -25,7 +25,7 @@ const newGroup = async (req, res) => {
         let newGroup = new Group({
             name: req.body.name,
             code: code,
-            master: userInfo.id,
+            master: [userInfo.id,userInfo.name],
             description: req.body.description,
             size: req.body.size,
             characters: [],
@@ -108,7 +108,7 @@ const deleteGroup=(req, res) => {
 }
 const addPlayer=(req,res)=>{
     let id=req.body.id;
-    let player={user:req.body.user,character:req.body.character};
+    let player={user:req.body.user,username:req.body.username,character:req.body.character};
     let userInfo=req.userInfo;
     let master=userInfo.id;
     let requestID=req.body.request;
@@ -193,7 +193,7 @@ const removePlayer=(req,res)=>{
 }
 const requestJoin=(req,res)=>{
     let userInfo=req.userInfo;
-    let player={user:userInfo.id,character:req.body.character};
+    let player={user:userInfo.id,username:userInfo.name,character:req.body.character};
     let id=req.body.id;
     Character.findById(player.character,(err,data)=> {
         if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
@@ -235,7 +235,7 @@ const newMessage=(req,res)=>{
     let id=req.body.id;
     let userInfo=req.userInfo;
     let user=userInfo.id;
-    let username=userInfo.username;
+    let username=userInfo.name;
     let isMaster=false;
     let message=req.body.message;
     Group.findById(id,(err,data)=>{

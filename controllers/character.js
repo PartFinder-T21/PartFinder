@@ -3,11 +3,12 @@ const newCharacter = (req,res)=>{
     let stats=req.body.stats;
     let userInfo=req.userInfo;
     let user=userInfo.id;
-    if(stats.length===4) {
+    let image = req.body.image;
+    if(stats.length===4 && isBase64(image)) {
         const newCharacter = new Character({
             name: req.body.name,
             user: user,
-            image: req.body.image,
+            image: image,
             class: req.body.class,
             stats: stats,
             inventory: [],
@@ -40,6 +41,10 @@ const editCharacter=(req,res)=>{
     let userInfo=req.userInfo;
     let user=userInfo.id;
     let id=req.body.id;
+    let image = req.body.image;
+    if (!isBase64(image)) {
+        return res.status(400).json({message:'Image is not in the correct format',status:400});
+    }
     Character.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong', status:500});
         else if(!data) return res.status(404).json({message:'Character does not exist',status:404});
@@ -73,5 +78,10 @@ const deleteOneCharacter=(req,res)=>{
     })
 }
 
+
+const isBase64 = (str) => {
+    const base64RegExp = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+    return base64RegExp.test(str)
+}
 
 module.exports = {newCharacter,getCharacters,editCharacter,deleteOneCharacter};
