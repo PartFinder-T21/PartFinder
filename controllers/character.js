@@ -11,7 +11,7 @@ const newCharacter = (req,res)=>{
             image: image,
             class: req.body.class,
             stats: stats,
-            inventory: [],
+            inventory: req.body.inventory,
         })
         newCharacter.save((err, data) => {
             if (err) return res.status(500).json({Error: err, status: 500});
