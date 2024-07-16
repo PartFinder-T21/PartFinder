@@ -64,7 +64,7 @@ const getMyGroups=(req,res)=>{
     let userInfo = req.userInfo;
     let user = req.params.user;
     if(user === userInfo.id)
-        Group.find({$or:[{characters:{$elemMatch:{user:user}}},{master:{$elemMatch:{id:user}}}]}, (err, data) => {
+        Group.find({$or:[{characters:{$elemMatch:{user:user}}},{"master.id":user}]}, (err, data) => {
             if (err || !data) return res.status(404).json({message: "Group does not exist", status: 404});
             else return res.status(200).json({data: data, status: 200});
         })
