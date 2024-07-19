@@ -80,7 +80,7 @@ const deleteOneCharacter=(req,res)=>{
 
 
 const isBase64 = (str) => {
-    const base64RegExp = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+    const base64RegExp = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
     return base64RegExp.test(str)
 }
 
