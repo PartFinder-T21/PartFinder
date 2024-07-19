@@ -4,7 +4,7 @@ const newCharacter = (req,res)=>{
     let userInfo=req.userInfo;
     let user=userInfo.id;
     let image = req.body.image;
-    if(stats.length===6 && isBase64(image)) {
+    if(stats.length===6 /*&& isBase64(image)*/) {
         const newCharacter = new Character({
             name: req.body.name,
             user: user,
@@ -42,9 +42,9 @@ const editCharacter=(req,res)=>{
     let user=userInfo.id;
     let id=req.body.id;
     let image = req.body.image;
-    if (!isBase64(image)) {
-        return res.status(400).json({message:'Image is not in the correct format',status:400});
-    }
+    // if (!isBase64(image)) {
+    //     return res.status(400).json({message:'Image is not in the correct format',status:400});
+    // }
     Character.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong', status:500});
         else if(!data) return res.status(404).json({message:'Character does not exist',status:404});
