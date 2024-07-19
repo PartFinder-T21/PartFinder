@@ -82,8 +82,10 @@ const deleteOneCharacter=(req,res)=>{
 const isBase64 = (str) => {
     try {
         const buffer = Buffer.from(str, 'base64');
+        console.log("Buffer is "+buffer.toString('base64'));
         return buffer.toString('base64') === str;
     } catch (e) {
+        console.log("Base64 not maching");
         return false;
     }
 }
