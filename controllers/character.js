@@ -14,7 +14,7 @@ const newCharacter = (req,res)=>{
             inventory: req.body.inventory,
         })
         newCharacter.save((err, data) => {
-            if (err) return res.status(500).json({Error: err, status: 500});
+            if (err) return res.status(500).json({Error: "Something happened for some reason lol", status: 500});
             return res.status(201).json({data: data, status: 201});
         })
     }
@@ -82,10 +82,10 @@ const deleteOneCharacter=(req,res)=>{
 const isBase64 = (str) => {
     try {
         const buffer = Buffer.from(str, 'base64');
-        console.log("Buffer is "+buffer.toString('base64'));
+        process.stdout.write("Buffer is "+buffer.toString('base64'));
         return buffer.toString('base64') === str;
     } catch (e) {
-        console.log("Base64 not maching");
+        process.stdout.write("Base64 not maching");
         return false;
     }
 }
