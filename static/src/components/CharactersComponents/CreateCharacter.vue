@@ -11,7 +11,9 @@
         stats:[
           {stat:"strength", value:''},
           {stat:"dexterity", value:''},
+          {stat:"constitution", value:'10'},
           {stat:"intelligence", value:''},
+          {stat:"wisdom", value:'10'},
           {stat:"charisma", value:''},
         ]
       },
