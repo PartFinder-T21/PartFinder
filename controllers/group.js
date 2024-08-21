@@ -83,7 +83,7 @@ const editGroup=(req,res)=>{
         else if(size > 5) return res.status(400).json({message: 'Size too big', status: 400});
         else if(size < 1) return res.status(400).json({message: 'Size too small',status:400});
         else if(!data) return res.status(404).json({message: 'Group does not exist',status:404});
-        else if(data.master !== master) return res.status(403).json({message:'User is not master',status:403});
+        else if(data.master.id !== master) return res.status(403).json({message:'User is not master',status:403});
         else {
             Group.findByIdAndUpdate(id, {
                 name: name,
