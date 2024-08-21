@@ -103,7 +103,7 @@ const deleteGroup=(req, res) => {
     Group.findById(id,(err,data)=>{
         if (err) return res.status(500).json({message: "Unexpected error", status: 500});
         else if (!data) return res.status(404).json({message: "Group does not exist", status: 404});
-        else if(data.master!==master) return res.status(403).send();
+        else if(data.master.id!==master) return res.status(403).send();
         else
             Group.findByIdAndDelete(id,(err)=>{
                 if(err) return res.status(500).json({message:'Unexpected error',status: 500});
@@ -121,7 +121,7 @@ const addPlayer=(req,res)=>{
     Group.findById(id,async (err, data) => {
         if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
         else if (!data) return res.status(404).json({message: 'Group does not exist', status: 404});
-        else if (data.master !== master) return res.status(403).send();
+        else if (data.master.id !== master) return res.status(403).send();
         else {
             let charactersArray = data.characters;
             let requestsArray = data.requests;
@@ -156,7 +156,7 @@ const declinePlayer=(req,res)=>{
     Group.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
         else if(!data) return res.status(404).json({message:'Group does not exist',status:404});
-        else if(data.master!==master) return res.status(403).json({message:'Not master',status:403});
+        else if(data.master.id!==master) return res.status(403).json({message:'Not master',status:403});
         else{
             let requestsArray=data.requests;
             if(_.some(requestsArray,{_id:ObjectId(requestID)})) {
@@ -180,7 +180,7 @@ const removePlayer=(req,res)=>{
     Group.findById(id,(err,data)=>{
         if(err) return res.status(500).json({message:'Something went wrong',status:500});
         else if(!data) return res.status(404).json({message:'Group does not exist',status:404});
-        else if(data.master!==master) return res.status(403).send();
+        else if(data.master.id!==master) return res.status(403).send();
         else{
             let charactersArray=data.characters;
             if(_.some(charactersArray,{_id:ObjectId(playerID)})) {
@@ -250,11 +250,11 @@ const newMessage=(req,res)=>{
             let charactersArray=data.characters;
             let messages=data.messages
             //if user is not in group
-            if(user !== data.master && !_.some(charactersArray,{user:user})){
+            if(user !== data.master.id && !_.some(charactersArray,{user:user})){
                 return res.status(403).json({message:'User in not in group',status:403});
             }
             else {
-                if (user === data.master) isMaster = true;
+                if (user === data.master.id) isMaster = true;
                 messages.push({username: username, message: message, isMaster: isMaster});
                 Group.findByIdAndUpdate(id, {
                     messages: messages
@@ -278,7 +278,7 @@ const getMessages=(req,res)=>{
         else{
             let messages=data.messages;
             let charactersArray=data.characters;
-            if(user !== data.master && !_.some(charactersArray,{user:user})) return res.status(403).json({message:'User is not in group',status:403});
+            if(user !== data.master.id && !_.some(charactersArray,{user:user})) return res.status(403).json({message:'User is not in group',status:403});
             return res.status(200).json(messages);
         }
     })
