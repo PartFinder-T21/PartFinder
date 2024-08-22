@@ -198,7 +198,7 @@ const removePlayer=(req,res)=>{
 }
 const requestJoin=(req,res)=>{
     let userInfo=req.userInfo;
-    let player={user:userInfo.id,username:userInfo.name,character:req.body.character,characterName:req.body.characterName};
+    let player={user:userInfo.id,username:userInfo.username,character:req.body.character,characterName:req.body.characterName};
     let id=req.body.id;
     Character.findById(player.character,(err,data)=> {
         if (err) return res.status(500).json({message: 'Something went wrong', status: 500});
