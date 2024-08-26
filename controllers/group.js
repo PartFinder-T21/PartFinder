@@ -240,7 +240,7 @@ const newMessage=(req,res)=>{
     let id=req.body.id;
     let userInfo=req.userInfo;
     let user=userInfo.id;
-    let username=userInfo.name;
+    let username=userInfo.username;
     let isMaster=false;
     let message=req.body.message;
     Group.findById(id,(err,data)=>{
