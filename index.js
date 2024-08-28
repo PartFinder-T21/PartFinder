@@ -13,8 +13,10 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const cookieSession = require('cookie-session');
 const routes=[userRoute,characterRoute,groupRoute,diceRoute];
+const bodyParser = require('body-parser');
 
 app.use(cookie_parser());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(express.json());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", req.header('Origin')); // Sostituisci "http://example.com" con l'origine consentita per le richieste
